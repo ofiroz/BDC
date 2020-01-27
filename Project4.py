@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture("WhatsApp Video 2020-01-23 at 16.21.02.mp4") # 0 for camera OR "WhatsApp Video 2020-01-23 at 16.21.02.mp4"
 if (cap is None):
     print("Failed to read the image")
     exit
@@ -19,7 +19,7 @@ while cap.isOpened():
     diff = cv2.absdiff(frame1, frame2)
     gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (5, 5), 0)
-    _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY) # thresh of 5 reconize breathing. 2 will reconize pulse!!
+    _, thresh = cv2.threshold(blur, 10, 255, cv2.THRESH_BINARY) # thresh of 5 reconize breathing. 2 will reconize pulse!!
 
     # Breath recognition options
     # 1. remove all big motions - dilate only breathing (only if tempo is correct)
@@ -34,7 +34,7 @@ while cap.isOpened():
     for contour in contours:
         (x, y, w, h) = cv2.boundingRect(contour)
 
-        if cv2.contourArea(contour) < 900:
+        if cv2.contourArea(contour) < 1000:
             continue
         cv2.rectangle(frame1, (x, y), (x+w, y+h), (0, 150, 255), 2)
     # cv2.drawContours(frame1, contours, -1, (0, 255, 0), 2)
@@ -53,7 +53,4 @@ while cap.isOpened():
 
 cv2.destroyAllWindows()
 cap.release()
-
-
-
 
