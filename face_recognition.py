@@ -2,11 +2,11 @@ import cv2
 
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0) # add if cap is None: print("Failed to read the image") exit
 
 while True:
-    _, img = cap.read()
-
+    _, img = cap.read() # add if img is None: break
+    
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # Detect faces configured in the XML
