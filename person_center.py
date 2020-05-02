@@ -56,7 +56,7 @@ def circle_center(image_path, center_coordinates):
 # NO NEED FOR A MAIN
 if __name__ == "__main__":
 
-    image_path = 'WhatsApp Image 2020-05-01 at 15.09.02.jpeg'
+    image_path = 'WhatsApp Image 2020-04-25 at 09.29.42.jpeg'
     img = circle_center(image_path, Center_coordinates(image_path))
     plt.imshow(img, cmap='gray')
     plt.xticks([]), plt.yticks([])
@@ -65,3 +65,4 @@ if __name__ == "__main__":
 
 # can import Project.py
 # Project.main_func()
+
