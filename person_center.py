@@ -29,10 +29,10 @@ def Center_coordinates(image_path):
             # print(min_x, min_y, max_x, max_y)
             break
 
-    center_X = int((max_x + min_x)/2)
+    center_x = int((max_x + min_x)/2)
     center_y = int((max_y + min_y)/2)
     # print(center_X, center_y)
-    center_coordinates = (center_X, center_y)
+    center_coordinates = (center_x, center_y)
 
     # visualize.show_labeled_image(image, boxes, labels)
 
@@ -45,21 +45,22 @@ def Center_coordinates(image_path):
     return center_coordinates
 
 
+def circle_center(image_path, center_coordinates):
+    imgage = cv2.imread(image_path)
+    orginal_image_with_circle = cv2.circle(imgage, center_coordinates, 150, (255, 0, 0), 10)
+    orginal_image_with_circle
+
+    return orginal_image_with_circle
+
+
 # NO NEED FOR A MAIN
 if __name__ == "__main__":
 
     image_path = 'WhatsApp Image 2020-05-01 at 15.09.02.jpeg'
-    img = cv2.imread(image_path)
-    # cv2.imshow("cropped", cropped_person(image_path))
-    center = Center_coordinates(image_path)
-
-    img = cv2.circle(img, center, 120, (255, 0, 0), 10)
-
+    img = circle_center(image_path, Center_coordinates(image_path))
     plt.imshow(img, cmap='gray')
     plt.xticks([]), plt.yticks([])
     plt.show()
-    #cv2.imshow("cropped", img)
-   # cv2.waitKey(0)
 
 
 # can import Project.py
