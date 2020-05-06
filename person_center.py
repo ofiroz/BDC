@@ -29,6 +29,10 @@ def Center_coordinates(image_path):
             # print(min_x, min_y, max_x, max_y)
             break
 
+    # calculate main vector length, radius = (main vector length) * 0.3
+    radius = (((max_x-min_x)**2 + (max_y-min_y)**2)**0.5) * 0.15
+    # print(radius)
+
     center_x = int((max_x + min_x)/2)
     center_y = int((max_y + min_y)/2)
     # print(center_X, center_y)
@@ -42,12 +46,12 @@ def Center_coordinates(image_path):
     # cv2.imshow("cropped", crop_img)
     # cv2.waitKey(0)
     # return crop_img, center_coordinates
-    return center_coordinates
+    return center_coordinates, radius
 
 
-def circle_center(image_path, center_coordinates):
+def circle_center(image_path, center_coordinates, radius):
     imgage = cv2.imread(image_path)
-    orginal_image_with_circle = cv2.circle(imgage, center_coordinates, 150, (255, 0, 0), 10)
+    orginal_image_with_circle = cv2.circle(imgage, center_coordinates, radius, (255, 0, 0), 10)
     orginal_image_with_circle
 
     return orginal_image_with_circle
@@ -56,8 +60,10 @@ def circle_center(image_path, center_coordinates):
 # NO NEED FOR A MAIN
 if __name__ == "__main__":
 
-    image_path = 'WhatsApp Image 2020-04-25 at 09.29.42.jpeg'
-    img = circle_center(image_path, Center_coordinates(image_path))
+    image_path = 'WhatsApp Image 2020-04-27 at 11.53.36.jpeg'
+    center, circle_radius = Center_coordinates(image_path)
+    circle_radius = int(circle_radius)
+    img = circle_center(image_path, center, circle_radius)
     plt.imshow(img, cmap='gray')
     plt.xticks([]), plt.yticks([])
     plt.show()
@@ -65,4 +71,3 @@ if __name__ == "__main__":
 
 # can import Project.py
 # Project.main_func()
-
