@@ -8,17 +8,24 @@ from matplotlib import pyplot as plt
 # finds the person's location and it's center
 # returns the center's coordinates
 def Center_coordinates(image_path):
-    image = utils.read_image(image_path)
+
+    image = utils.read_image(image_path) # image_path
+
     model = core.Model()
 
-    labels, boxes, scores = model.predict_top(image)
+    # print(model.predict_top(image))
 
+    labels, boxes, scores = model.predict_top(image)
+    # print("Test 1")
     min_x = 0
     min_y = 0
     max_x = 0
     max_y = 0
 
+    person_is_found = 0
+
     for lbl, box in zip(labels, boxes): # zip stops when the shorter list is finished
+        # print("Test 2")
         if lbl is "person":
             # print(type(box)) # finding the person's box
             a, b, c, d = box # a,b,c,d are "torch.Tensor" objects
@@ -27,7 +34,15 @@ def Center_coordinates(image_path):
             max_x = int(c)
             max_y = int(d)
             # print(min_x, min_y, max_x, max_y)
+            person_is_found = 1
+            print("person HAS BEEN found")
             break
+
+
+    # if no person has been found
+    if person_is_found == 0:
+        print("no person found")
+        return (0, 0), 0
 
     # calculate main vector length, radius = (main vector length) * 0.3
     radius = (((max_x-min_x)**2 + (max_y-min_y)**2)**0.5) * 0.15
@@ -58,16 +73,24 @@ def circle_center(image_path, center_coordinates, radius):
 
 
 # NO NEED FOR A MAIN
-if __name__ == "__main__":
+# if __name__ == "__main__":
+'''
+image_path = 'WhatsApp Image 2020-04-27 at 11.53.36.jpeg'
+center, circle_radius = Center_coordinates(image_path)
+circle_radius = int(circle_radius)
+img = circle_center(image_path, center, circle_radius)
 
-    image_path = 'WhatsApp Image 2020-04-27 at 11.53.36.jpeg'
-    center, circle_radius = Center_coordinates(image_path)
-    circle_radius = int(circle_radius)
-    img = circle_center(image_path, center, circle_radius)
-    plt.imshow(img, cmap='gray')
-    plt.xticks([]), plt.yticks([])
-    plt.show()
-
+plt.imshow(img, cmap='gray')
+plt.xticks([]), plt.yticks([])
+plt.show()
+'''
 
 # can import Project.py
 # Project.main_func()
+
+
+
+# WhatsApp Image 2020-05-03 at 14.07.23.jpeg
+# WhatsApp Image 2020-05-03 at 14.07.39.jpeg
+# WhatsApp Image 2020-04-25 at 09.29.42.jpeg
+# WhatsApp Image 2020-04-27 at 11.53.36.jpeg
