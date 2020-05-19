@@ -1,0 +1,32 @@
+import threading
+import person_center
+from matplotlib import pyplot as plt
+
+
+# checks for person in the frame every n seconds - uses person_center
+def check_for_person():
+    image_path = 'WhatsApp Image 2020-04-27 at 11.53.36.jpeg'
+    center, circle_radius = person_center.Center_coordinates(image_path)
+    circle_radius = int(circle_radius)
+    img = person_center.circle_center(image_path, center, circle_radius)
+
+    plt.imshow(img, cmap='gray')
+    plt.xticks([]), plt.yticks([])
+    plt.show()
+
+    timer = threading.Timer(12, check_for_person())  # Calls check_for_person every 10 seconds
+    timer.start()
+
+
+def print_hello():
+    print('Hello every 2 seconds')
+    timer = threading.Timer(2, print_hello) # Call `print_hello` in 2 seconds.
+    timer.start()
+
+
+def call_background_thread():
+    print_hello()
+    check_for_person()
+
+
+
