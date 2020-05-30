@@ -1,20 +1,64 @@
+import cv2
+import numpy as np
+import glob
 import threading
 import person_center
 from matplotlib import pyplot as plt
+import queue
 
+# sample_frame = cv2.imread(path) 'WhatsApp Image 2020-04-27 at 11.53.36.jpeg'
+
+# flag to every 10 frames - use only flag_to_ten[0]
+flag_to_ten = [10]
+
+frame_sample = [1]
+
+
+'''
+# current frame queue
+Q = queue.Queue(maxsize=2)
+Q.put(1)  # end of queue flag - check if qsize > 1
+
+
+
+
+Q.put(5)
+#Q.put(54)
+#Q.put(53)
+print(Q.get())
+print(Q.get())
+
+if Q.empty() is True:
+    print("empty")
+
+if Q.full is True:
+    print("full")
+'''
 
 # checks for person in the frame every n seconds - uses person_center
 def check_for_person():
+    # cv2.waitKey(2000)
+    # print(sample)
     image_path = 'WhatsApp Image 2020-04-27 at 11.53.36.jpeg'
+    # image_path = frame_sample
+
+
+
     center, circle_radius = person_center.Center_coordinates(image_path)
     circle_radius = int(circle_radius)
     img = person_center.circle_center(image_path, center, circle_radius)
+
+    # OpenCV represents RGB images as multi - dimensional NumPy
+    # arrays… but in reverse order!
+    # need to do is convert the image from BGR to RGB
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
 
     plt.imshow(img, cmap='gray')
     plt.xticks([]), plt.yticks([])
     plt.show()
 
-    timer = threading.Timer(12, check_for_person())  # Calls check_for_person every 10 seconds
+    timer = threading.Timer(10, check_for_person())  # Calls check_for_person every 10 seconds
     timer.start()
 
 
@@ -29,4 +73,90 @@ def call_background_thread():
     check_for_person()
 
 
+# frame tempering from Project
 
+def readVideo(video_name):
+    capture = cv2.VideoCapture(video_name)  # 0 for camera OR video_name
+    if capture is None:
+        print("Failed to read the image")
+        exit
+    # resized_capture = resizeimage.resize_thumbnail(capture, [640, 360])
+
+    return capture
+
+
+# get one video -> deliver motion detection
+def video_processing(vid_name):
+    cap = readVideo(vid_name)
+
+    #    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    #    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+    _, frame1 = cap.read()
+    _, frame2 = cap.read()
+    # print(frame1.shape)
+
+    while cap.isOpened():
+        # Major issue - SOLVED
+        # returns an error while trying to read frames when video is over.
+        if frame1 is None or frame2 is None:
+            # print("success")
+            return
+        diff = cv2.absdiff(frame1, frame2)
+        # print(frame1.shape)
+        # print(frame2.shape)
+        gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+        blur = cv2.GaussianBlur(gray, (5, 5), 0)
+        _, thresh = cv2.threshold(blur, 18, 255,
+                                  cv2.THRESH_BINARY)  # thresh of 5 reconize breathing. 2 will reconize pulse!!
+
+        dilated = cv2.dilate(thresh, None, iterations=3)
+
+        # cv2.imshow("feed", dilated)
+
+        contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        for contour in contours:
+            (x, y, w, h) = cv2.boundingRect(contour)
+
+            if cv2.contourArea(contour) < 1000:
+                continue
+            cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 150, 255), 2) # enlarge the image in the rectangle
+
+        # cv2.drawContours(frame1, contours, -1, (0, 255, 0), 2)
+
+        cv2.imshow("feed", frame1)
+# ============================================================
+        # sample every 10th frame for person detection
+        if flag_to_ten[0] == 1:
+            frame_sample.pop()
+            frame_sample.append(frame1)
+            flag_to_ten[0] = 10
+        else:
+            flag_to_ten[0] = flag_to_ten[0]-1
+# ============================================================
+        # cv2.imshow("feed", diff)
+        # cv2.imshow("feed", dilated)
+
+        frame1 = frame2
+        _, frame2 = cap.read()
+
+        if cv2.waitKey(40) == 27:
+            break
+
+    cv2.destroyAllWindows()
+    cap.release()
+
+
+# get ALL videos -> deliver motion detection
+def main_func():
+    videos_name_list = []
+    path = glob.glob('Video Samples/*.mp4')  # choose right format and location
+
+    for tmp in path:  # check if gets names OR the videos (MP4)
+        # print(tmp)
+        videos_name_list.append(tmp)
+
+    for vid in videos_name_list:
+        print(vid)
+        video_processing(vid)
