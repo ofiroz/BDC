@@ -1,26 +1,16 @@
 import cv2
 from detecto import core, utils, visualize
-from matplotlib import pyplot as plt
-# import Project
 
 
 # this function detect a person (uses ML model)
 # finds the person's location and it's center
 # returns the center's coordinates
 def Center_coordinates(image_path):
-
-    # TODO: DELETE
-    #plt.imshow(image_path, cmap='gray')
-    #plt.xticks([]), plt.yticks([])
-    #plt.show()
-
-    # image = utils.read_image(image_path) # image_path
     image = image_path
     model = core.Model()
 
     # print(model.predict_top(image))
     # person_is_found = 0
-
     try:
         labels, boxes, scores = model.predict_top(image)
         # print("Test 1")
@@ -40,11 +30,11 @@ def Center_coordinates(image_path):
                 max_y = int(d)
                 # print(min_x, min_y, max_x, max_y)
                 person_is_found = 1
-                print("person HAS BEEN found")
+                print("person HAS BEEN found") # TODO: DELETE
                 break
     except:
         # if no person has been found
-        print("no person found")
+        print("no person found") # TODO: DELETE
         return (0, 0), 0
 
     # calculate main vector length, radius = (main vector length) * 0.2
@@ -74,24 +64,8 @@ def circle_center(image_path, center_coordinates, radius):
         orginal_image_with_circle = cv2.circle(image, center_coordinates, radius, (255, 0, 0), 10)
         return orginal_image_with_circle
     except:
-        print("**** failed in circle_center - no person was found")
-    return cv2.imread('dddd.PNG') # TODO: add FAILED img
+        print("**** failed in circle_center - no person was found**************") # TODO: DELETE
+        # cv2.waitKey(900000000)
 
-
-'''
-# NO NEED FOR A MAIN
-if __name__ == "__main__":
-
-    image_path = 'pasted2.png'
-    center, circle_radius = Center_coordinates(image_path)
-    circle_radius = int(circle_radius)
-    img = circle_center(image_path, center, circle_radius)
-
-    plt.imshow(img, cmap='gray')
-    plt.xticks([]), plt.yticks([])
-    plt.show()
-'''
-
-# can import Project.py
-# Project.main_func()
+    return cv2.imread('ttt.JPG') # TODO: add FAILED img
 
