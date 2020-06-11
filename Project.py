@@ -7,6 +7,10 @@ import background_thread
 # from PIL import Image
 # from resizeimage import resizeimage
 from threading import Thread
+from matplotlib import pyplot as plt
+
+import warnings
+warnings.filterwarnings("ignore")
 # import breath_dilation
 import queue
 
@@ -15,17 +19,15 @@ import queue
 
 
 if __name__ == "__main__":
-
-    # print(background_thread.flag_to_ten)
-    #print(background_thread.frame_sample.__len__())
-
-
+    # 2 threads for to 2 infinity loops
     t = Thread(target=background_thread.call_background_thread)
-    keep_going = True
+    m = Thread(target=background_thread.main_func)
+
+    m.start()
     t.start()
-
-    background_thread.main_func()
-
+    #background_thread.call_background_thread()
+    # print("Main Process got to main_func")
+    #background_thread.main_func() # if no PERSON detected - return - handle it below
 
     ''' # FROM PERSON_DETECTION_ML.PY #
     
@@ -36,7 +38,7 @@ if __name__ == "__main__":
     '''
 
     # when the program ends kill thread
-    keep_going = False
     t.join()
+    m.join()
 
 
