@@ -16,5 +16,3 @@ if __name__ == "__main__":
     # when the program ends kill thread
     t.join()
     m.join()
-
-
