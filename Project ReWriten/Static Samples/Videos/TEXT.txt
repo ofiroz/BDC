@@ -1,0 +1,10 @@
+Sample	Length	Description
+v1	14 sec	empty bad, light beams, arm puting teddy bear in
+v2	12 sec	empty bed, no movment, light beams at the end
+v3	21 sec	empty bed, no movment, items added, hand at the end
+v4	10 sec	baby on belly, no movment
+v5	15 sec	same as v4 + small pacifier movments
+v6	11 sec	baby on back, no movments
+v7	15 sec	same as v6 + small eyes movments
+v8	15 sec	baby on back, no blanket, small foot and pacifier movments
+v9	9 sec	baby on back, no blanket, no movments
