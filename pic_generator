@@ -85,7 +85,7 @@ def fix(pic, a):
     return a
 
 
-# TODO: third part - Extract from vid + convert to gray anf fix name ===================================================
+# TODO: third part - Extract from vid + convert to gray and fix name + generates 2 pics - reg and mirror ===============
 def generator_all_together():
     videos_name_list = []
     path = glob.glob('*.mp4')  # choose right format and location
@@ -95,7 +95,7 @@ def generator_all_together():
 
     print(videos_name_list)
 
-    a = 278  # added to the image name to uniq it
+    a = 1  # TODO added to the image name to uniq it
     for vid in videos_name_list:
         print('Video Path:', vid)  # video name
         a = write_gray_pic_every_second(vid, a)
@@ -103,6 +103,7 @@ def generator_all_together():
     print("Done!")
 
 
+# generates 2 pics - reg and mirror
 def write_gray_pic_every_second(vid, a):
     videoFile = vid
     rotate = False
@@ -128,7 +129,12 @@ def write_gray_pic_every_second(vid, a):
         if frameId % math.floor(frameRate) == 0:
             filename = './test_images/image' + str(a) + ".jpg"
             cv2.imwrite(filename, frame)
-            a += 1
+
+            b = a + 1
+            mirror_filename = './test_images/image' + str(b) + ".jpg"
+            mirror_frame = cv2.flip(frame, 1)  # will be saved as a mirror (horizontal flip) pic of frame
+            cv2.imwrite(mirror_filename, mirror_frame)
+            a += 2
         cv2.imshow('frame', frame)
         if cv2.waitKey(40) == 27:
             break
