@@ -1,0 +1,16 @@
+Sample	Length	Description (no movement - except breathing)
+v1	14 sec	empty bad, light beams, arm puting teddy bear in
+v2	12 sec	empty bed, no movement, light beams at the end
+v3	21 sec	empty bed, no movement, items added, hand at the end
+v4	10 sec	baby on belly, no movement
+v5	15 sec	same as v4 + small pacifier movements
+v6	11 sec	baby on back, no movements
+v7	15 sec	same as v6 + small eyes movments
+v8	15 sec	baby on back, no blanket, small foot and pacifier movements
+v9	9 sec	baby on back, no blanket, no movements
+v10	18 sec	baby on side, no blanket, no movement
+v11	17 sec	baby on side, no blanket, no movement, head not in the frame
+
+VIP/VIP_sample1	2:07 min	baby on side, no blanket, hand movement at 1:13
+VIP/VIP_sample2	1:05 min	baby on back, light changes, finger moves at 0:16, no other movement
+VIP/VIP_sample3	1:29 min	no baby, lights changes, handes in frame, blancket changes positions (negative)
