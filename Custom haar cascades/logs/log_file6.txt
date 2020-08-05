@@ -1,0 +1,52 @@
+Logs from running all cascades an v6.mp4
+====================================================
+
+ Start testing cascade: haarcascade_eliav1_44x24_15it.xml
+   Done testing cascade: Cascades/haarcascade_eliav1_44x24_15it.xml
+
+ Start testing cascade: haarcascade_eliav2_44x24_20it.xml
+   Done testing cascade: Cascades/haarcascade_eliav2_44x24_20it.xml
+
+ Start testing cascade: haarcascade_eliav3_43x24_15it.xml
+   Done testing cascade: Cascades/haarcascade_eliav3_43x24_15it.xml
+
+ Start testing cascade: haarcascade_eliav4_43x24_20it.xml
+   Done testing cascade: Cascades/haarcascade_eliav4_43x24_20it.xml
+
+ Start testing cascade: haarcascade_eliav5_37x20_15it.xml
+   Done testing cascade: Cascades/haarcascade_eliav5_37x20_15it.xml
+
+ Start testing cascade: haarcascade_eliav6_37x20_20it.xml
+   Done testing cascade: Cascades/haarcascade_eliav6_37x20_20it.xml
+
+ Start testing cascade: haarcascade_eliav7_36x20_15it.xml
+   Done testing cascade: Cascades/haarcascade_eliav7_36x20_15it.xml
+
+ Start testing cascade: haarcascade_eliav8_36x20_20it.xml
+   Done testing cascade: Cascades/haarcascade_eliav8_36x20_20it.xml
+
+ Start testing cascade: haarcascade_eliav9_28x15_15it.xml
+   Done testing cascade: Cascades/haarcascade_eliav9_28x15_15it.xml
+
+ Start testing cascade: haarcascade_eliav10_28x15_20it.xml
+   Done testing cascade: Cascades/haarcascade_eliav10_28x15_20it.xml
+
+ Start testing cascade: haarcascade_eliav11_27x15_15it.xml
+   Done testing cascade: Cascades/haarcascade_eliav11_27x15_15it.xml
+
+ Start testing cascade: haarcascade_eliav12_27x15_20it.xml
+   Done testing cascade: Cascades/haarcascade_eliav12_27x15_20it.xml
+
+ Start testing cascade: haarcascade_eliav13_24x24_15it.xml
+   Done testing cascade: Cascades/haarcascade_eliav13_24x24_15it.xml
+
+ Start testing cascade: haarcascade_eliav14_24x24_20it.xml
+   Done testing cascade: Cascades/haarcascade_eliav14_24x24_20it.xml
+
+ Start testing cascade: haarcascade_eliav15_20x20_15it.xml
+   Done testing cascade: Cascades/haarcascade_eliav15_20x20_15it.xml
+
+ Start testing cascade: haarcascade_eliav16_20x20_20it.xml
+   Done testing cascade: Cascades/haarcascade_eliav16_20x20_20it.xml
+
+Done running all cascade on v6.mp4
