@@ -12,32 +12,6 @@ print(videos_name_list)
 cv2.waitKey(20000)
 '''
 
-'''
-def foo(x)->int:
-    return x
-
-print(type(foo))
-'''
-
-'''
-video_src = 'VIP_sample1.mp4'
-video_src = 'VIP_sample2.mp4'
-video_src = 'sample3.mp4'
-video_src = 'sample11.mp4'
-video_src = 'v5.mp4'
-
-cascade = cv2.CascadeClassifier('haarcascade_eliav.xml')
-cascade = cv2.CascadeClassifier('haarcascade_eliav2.xml')
-cascade = cv2.CascadeClassifier('haarcascade_eliav3.xml')
-cascade = cv2.CascadeClassifier('haarcascade_eliav4.xml')
-cascade = cv2.CascadeClassifier('haarcascade_eliav5 24x44 15it.xml')
-cascade = cv2.CascadeClassifier('haarcascade_eliav6 24x24 15it.xml')
-cascade = cv2.CascadeClassifier('haarcascade_eliav7 24x24 20it.xml')
-cascade = cv2.CascadeClassifier('haarcascade_eliav8 20x20 20it.xml')
-cascade = cv2.CascadeClassifier('haarcascade_eliav9 20x20 15it.xml')
-'''
-
-# TODO: play with 3 factors - video_src, cascade and scaleFactor
 
 Video_list = ['v1.mp4', 'v2.mp4', 'v3.mp4', 'v4.mp4', 'v5.mp4', 'v6.mp4', 'v7.mp4'
     , 'VIP_sample1.mp4', 'VIP_sample2.mp4', 'sample11.mp4']
@@ -145,5 +119,4 @@ def work(video_src, cascade, log):
 # work(Video_list[3], Cascade_list[1])  # working
 # work(Video_list[4], Cascade_list[4])
 
-# runLoop(Video_list, OLD_Cascade_list)
 runLoop(Video_list, Cascade_list)
