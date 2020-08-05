@@ -54,9 +54,9 @@ def runLoop(video_list, cascade_list):
 def run_all_cascade(vid, cascade_list, log):
     for c in cascade_list:
         log.write("\n Start testing cascade: " + c)
-        print(c)
+        # print(c)
         c = "Cascades/" + c  # grabbing the cascades from a folder
-        print(c)
+        # print(c)
         work(vid, c, log)
         # print("\nDone cascade " + c + "\n")
         log.write("\n   Done testing cascade: " + c + "\n")
