@@ -3,28 +3,26 @@ import time
 import glob
 
 
-''' not working.. not sorted
-path = glob.glob('Cascades/*.xml') 
-videos_name_list = []
-for name in path: 
-    videos_name_list.append(name)
-print(videos_name_list)
-cv2.waitKey(20000)
-'''
+def get_cascade_list():
+    cascade_list = []
+    path = glob.glob('Cascades/*.xml')  # choose right format and location
+    for name in path:  # check if gets names OR the videos (MP4)
+        cascade_list.append(name)
+    return cascade_list
 
-# TODO: play with 3 factors - video_src, cascade and scaleFactor
 
-Video_list = ['v1.mp4', 'v2.mp4', 'v3.mp4', 'v4.mp4', 'v5.mp4', 'v6.mp4', 'v7.mp4'
-    , 'VIP_sample1.mp4', 'VIP_sample2.mp4', 'sample11.mp4']
-
-Cascade_list = ['haarcascade_eliav.xml', 'haarcascade_eliav2.xml', 'haarcascade_eliav3.xml', 'haarcascade_eliav4.xml'
-    , 'haarcascade_eliav5 24x44 15it.xml', 'haarcascade_eliav6 24x24 15it.xml', 'haarcascade_eliav7 24x24 20it.xml'
-    , 'haarcascade_eliav8 20x20 20it.xml', 'haarcascade_eliav9 20x20 15it.xml']
+def get_vid_list():
+    vid_list = []
+    path = glob.glob('Videos/*.mp4')  # choose right format and location
+    for name in path:  # check if gets names OR the videos (MP4)
+        vid_list.append(name)
+    return vid_list
 
 
 # test all videos with all cascades
-def runLoop(video_list, cascade_list):
-
+def runLoop():
+    cascade_list = get_cascade_list()
+    video_list = get_vid_list()
     start_time = time.time()
 
     log_num = 1
@@ -34,6 +32,7 @@ def runLoop(video_list, cascade_list):
         run_all_cascade(v, cascade_list, log)
         print(v + "  Finished\n")
         log.close()
+        print("logs file for " + v + "  was generated successfully\n")
         log_num += 1
         # log.write("\n" + v + "  Finished")
     t_pass = time.strftime("%H:%M:%S", time.gmtime(time.time() - start_time))
@@ -46,6 +45,9 @@ def runLoop(video_list, cascade_list):
 def run_all_cascade(vid, cascade_list, log):
     for c in cascade_list:
         log.write("\n Start testing cascade: " + c)
+        # print(c)
+        # c = "Cascades/" + c  # grabbing the cascades from a folder
+        # print(c)
         work(vid, c, log)
         # print("\nDone cascade " + c + "\n")
         log.write("\n   Done testing cascade: " + c + "\n")
@@ -68,8 +70,8 @@ def work(video_src, cascade, log):
     if hi == 352:
         rotate = True
 
-    cv2.imshow('feed', frame1)
-    cv2.waitKey(300)
+    cv2.imshow('feed', frame1)  # show the video original shape
+    cv2.waitKey(200)
 
     start_time = time.time()
 
@@ -83,7 +85,12 @@ def work(video_src, cascade, log):
 
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # print(gray.shape)
-        casc = Cascade.detectMultiScale(gray, 1.3, 2, minSize=(100, 100))  # minSize=(W, H) TODO
+        #casc = Cascade.detectMultiScale(gray, 1.3, 2, minSize=(100, 100))  # minSize=(W, H) TODO
+        casc = Cascade.detectMultiScale(gray, 1.05, 5, minSize=(130, 130))  # minSize=(W, H) TODO
+
+        '''
+        scaleFactor 1.05 is a good possible value for this, which means you use a small step for resizing, i.e. reduce size by 5%, you increase the chance of a matching size with the model for detection is found. This also means that the algorithm works slower since it is more thorough. You may increase it to as much as 1.4 for faster detection, with the risk of missing some faces altogether.
+        '''
 
         for (a, b, c, d) in casc:
             cv2.rectangle(img, (a, b), (a + c, b + d), (0, 255, 210), 4)
@@ -105,7 +112,10 @@ def work(video_src, cascade, log):
     cv2.destroyAllWindows()
 
 
-# work(Video_list[3], Cascade_list[1])  # working
-# work(Video_list[4], Cascade_list[4])
+if __name__ == "__main__":
+    # work(Video_list[3], Cascade_list[1])  # working
+    # work(Video_list[4], Cascade_list[4])
 
-runLoop(Video_list, Cascade_list)
+    # runLoop(Video_list, OLD_Cascade_list)
+
+    runLoop()
