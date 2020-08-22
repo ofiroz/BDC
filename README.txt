@@ -43,5 +43,5 @@ https://github.com/brycedrennan/eulerian-magnification - implementation
 
 https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_pyramids/py_pyramids.html - Image Pyramids
 
-
+https://docs.opencv.org/2.4/modules/video/doc/motion_analysis_and_object_tracking.html - calculating an optical flow (Lucas-Kanade) for breath monitoring
 
