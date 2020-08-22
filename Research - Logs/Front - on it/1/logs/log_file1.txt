@@ -1,0 +1,32 @@
+Logs from running all cascades an v1.mp4
+====================================================
+
+ Start testing cascade: Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:00!!! Height: 204  Width: 204
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:00!!! Height: 119  Width: 119
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:00!!! Height: 122  Width: 122
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:00!!! Height: 256  Width: 256
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:00!!! Height: 240  Width: 240
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:00!!! Height: 246  Width: 246
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:00!!! Height: 256  Width: 256
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:01!!! Height: 225  Width: 225
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:01!!! Height: 222  Width: 222
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:02!!! Height: 211  Width: 211
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:02!!! Height: 195  Width: 195
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:02!!! Height: 196  Width: 196
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:03!!! Height: 242  Width: 242
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:03!!! Height: 240  Width: 240
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:03!!! Height: 222  Width: 222
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:04!!! Height: 180  Width: 180
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:05!!! Height: 221  Width: 221
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:05!!! Height: 129  Width: 129
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:05!!! Height: 224  Width: 224
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:05!!! Height: 127  Width: 127
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:06!!! Height: 125  Width: 125
+GOT ONE in v1.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:07!!! Height: 142  Width: 142
+   Done testing cascade: Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml
+
+ Start testing cascade: Cascades\haar_cascade_upperbody_24x24_20it_90pos_5m46sec.xml
+   Done testing cascade: Cascades\haar_cascade_upperbody_24x24_20it_90pos_5m46sec.xml
+
+Done running all cascade on v1.mp4

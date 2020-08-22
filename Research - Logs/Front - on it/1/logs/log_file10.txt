@@ -1,0 +1,13 @@
+Logs from running all cascades an sample11.mp4
+====================================================
+
+ Start testing cascade: Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml
+GOT ONE in sample11.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:04!!! Height: 121  Width: 121
+GOT ONE in sample11.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:06!!! Height: 124  Width: 124
+GOT ONE in sample11.mp4 with Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml at 00:00:08!!! Height: 121  Width: 121
+   Done testing cascade: Cascades\haar_cascade_upperbody_24x24_15it_90pos_1m34sec.xml
+
+ Start testing cascade: Cascades\haar_cascade_upperbody_24x24_20it_90pos_5m46sec.xml
+   Done testing cascade: Cascades\haar_cascade_upperbody_24x24_20it_90pos_5m46sec.xml
+
+Done running all cascade on sample11.mp4
