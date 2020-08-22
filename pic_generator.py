@@ -1,9 +1,11 @@
 import cv2
 import glob
 import math
-
+import time
 
 # TODO: there must be a "test_images" folder with the .py file
+
+'''
 # this func gets a set of videos and extract a frame every second from each video.
 # with is I have created my cascade learning pictures set (positive & negative)
 def generator():
@@ -55,10 +57,10 @@ def write_pic_every_second(vid, a):
             break
 
     cap.release()
-
+'''
 # TODO: second part - convert to gray pics and fix name ================================================================
 
-
+'''
 # picked pictures from many sources.. need to convert to gray pics & fix to naming convention
 def generator_gray():
     pictures_name_list = []
@@ -79,14 +81,18 @@ def generator_gray():
 def fix(pic, a):
     picture = cv2.imread(pic)
     gray_pic = cv2.cvtColor(picture, cv2.COLOR_BGR2GRAY)
-    filename = './test_images/image' + str(int(a)) + ".jpg"
+    gray_pic = picture  # TODO: fix names ONLY
+    filename = './test_images/' + str(int(a)) + ".jpg"
     cv2.imwrite(filename, gray_pic)
     a += 1
     return a
+'''
 
 
 # TODO: third part - Extract from vid + convert to gray and fix name + generates 2 pics - reg and mirror ===============
 def generator_all_together():
+    start_time = time.time()
+
     videos_name_list = []
     path = glob.glob('*.mp4')  # choose right format and location
 
@@ -100,15 +106,21 @@ def generator_all_together():
         print('Video Path:', vid)  # video name
         a = write_gray_pic_every_second(vid, a)
 
-    print("Done!")
+    t_pass = time.strftime("%H:%M:%S", time.gmtime(time.time() - start_time))
+    print("\nDone after " + t_pass)
 
 
-# generates 2 pics - reg and mirror
+# generates 2 gray pics - reg and mirror
 def write_gray_pic_every_second(vid, a):
     videoFile = vid
     rotate = False
     cap = cv2.VideoCapture(videoFile)
-    frameRate = cap.get(5)  # frame rate
+    frameRate = cap.get(5)  # frames per second = 29.9332
+
+    # fps = cap.get(cv2.CAP_PROP_FPS)
+    # print("Frames per second using video.get(cv2.CAP_PROP_FPS) : {0}".format(fps))  # ==print(cap.get(5))
+    # print(cap.get(5))
+    # print(cap.get(0))  # returns the time in video in milliseconds
 
     ret1, frame1 = cap.read()
     hi, wi, _ = frame1.shape
@@ -119,22 +131,30 @@ def write_gray_pic_every_second(vid, a):
     while cap.isOpened():
         frameId = cap.get(1)  # current frame number
         ret, frame = cap.read()
-        if ret != True:
+        if ret is None:
             break
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if rotate:
             frame = cv2.rotate(frame, cv2.cv2.ROTATE_90_CLOCKWISE)
 
-        if frameId % math.floor(frameRate) == 0:
+        # if frameId % math.floor(frameRate) == 0:  # every ~29 frames
+        if frameId % math.floor(frameRate) == 0 or frameId % math.floor(frameRate) == 15:  # every ~15 frame - 2 per sec
             filename = './test_images/image' + str(a) + ".jpg"
-            cv2.imwrite(filename, frame)
+            # filename = './n_nums_no_mirror/' + str(a) + ".jpg"   # TODO mirror
+            # filename = './n_mirror_nums/' + str(c) + ".jpg"  # TODO delete
+            # filename = './n_mirror_nums/' + str(a) + ".jpg"  # TODO delete
 
-            b = a + 1
-            mirror_filename = './test_images/image' + str(b) + ".jpg"
-            mirror_frame = cv2.flip(frame, 1)  # will be saved as a mirror (horizontal flip) pic of frame
-            cv2.imwrite(mirror_filename, mirror_frame)
-            a += 2
+            cv2.imwrite(filename, frame)
+            # cv2.imwrite(filename1, frame)  # TODO delete
+
+            # b = a + 1   # TODO mirror
+            # mirror_filename = './test_images/image' + str(b) + ".jpg"   # TODO mirror
+            # mirror_filename = './n_mirror_nums/' + str(b) + ".jpg"
+            # mirror_frame = cv2.flip(frame, 1)  # will be saved as a mirror (horizontal flip) pic of frame
+            # cv2.imwrite(mirror_filename, mirror_frame)   # TODO mirror
+            # a += 2   # TODO mirror
+            a += 1
         cv2.imshow('frame', frame)
         if cv2.waitKey(40) == 27:
             break
@@ -146,3 +166,4 @@ if __name__ == "__main__":
     # generator()
     # generator_gray()
     generator_all_together()
+
