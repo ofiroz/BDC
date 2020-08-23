@@ -13,6 +13,8 @@ class FrameHelper(object):
         self.curr_frame = np.zeros((10, 10))
         self.frame_output = np.zeros((10, 10))
 
+        self.rotate = False
+
         self.videos_are_done = False
         self.vid_capture = []  # correct type?
 
@@ -22,6 +24,8 @@ class FrameHelper(object):
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         duration = frame_count / fps
         """
+        # TODO: using the state option aloows only 1 btn at a time! not ideal..
+        self.state = ''  # can be either pulse monitor/ breath monitor/ baby detection
 
         # self.buffer_size = 250  # needed?
         # self.window = np.hamming(self.buffer_size)
@@ -29,12 +33,16 @@ class FrameHelper(object):
         # self.freqs = []  # needed?
         # self.fft = []  # needed?
 
-        self.upper_body = cv2.CascadeClassifier('haarcascade_upperbody.xml')
-        self.full_body = cv2.CascadeClassifier('haarcascade_fullbody.xml')
+        self.cascade = 'haar_cascade_upperbody_24x24_20it_90pos_5m46sec.xml'
+        # self.upper_body = cv2.CascadeClassifier('haarcascade_upperbody.xml')
+        # self.full_body = cv2.CascadeClassifier('haarcascade_fullbody.xml')
 
         # self.rect = [1, 1, 2, 2]
 
         self.last_center = np.array([0, 0])  # usage in shift
+
+        # TODO: for upper body cascade ill need to use the lower center of the ROI
+        # TODO: ill monitor a ROI smaller then the original one
         self.new_xywh = 0, 0, 0, 0  # will pass to it the ROI every iteration - usage in shift
 
         self.idx = 1
@@ -52,7 +60,7 @@ class FrameHelper(object):
         self.frame_processor()
 
     # calls check_for_person every 5 seconds
-    def frame_processor(self):  # TODO needed
+    def frame_processor(self):  # TODO not needed if using self. 
         print("frame_processor")
         '''
         while True:
@@ -171,6 +179,11 @@ class FrameHelper(object):
         self.prev_frame = np.zeros((10, 10))
         self.frame_output = np.zeros((10, 10))
 
+    def rotate_frames(self):
+        self.curr_frame = cv2.rotate(self.curr_frame, cv2.cv2.ROTATE_90_CLOCKWISE)
+        self.prev_frame = cv2.rotate(self.prev_frame, cv2.cv2.ROTATE_90_CLOCKWISE)
+        self.frame_output = cv2.rotate(self.frame_output, cv2.cv2.ROTATE_90_CLOCKWISE)
+
     # active the process on every video by order
     def show_vid(self):
         videos_name_list = []
@@ -197,7 +210,10 @@ class FrameHelper(object):
             print("Failed to read the video")
             exit
 
-        self.prev_frame = self.vid_capture.read()
+        _, self.prev_frame = self.vid_capture.read()
+        hi, wi, _ = self.prev_frame.shape
+        if hi == 352:
+            self.rotate = True
 
         # resized_capture = resizeimage.resize_thumbnail(capture, [640, 360])
         # frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -212,7 +228,9 @@ class FrameHelper(object):
                 self.init()
                 return
 
-            self.frame_output = self.curr_frame
+            self.frame_output = self.curr_frame  # only for rotate_frame
+            if self.rotate:
+                self.rotate_frames()
 
             # =========== Center Movement Detection ================================
             '''
@@ -243,7 +261,20 @@ class FrameHelper(object):
             '''
             # =========== Center Movement Detection ================================
 
-            cv2.imshow("feed", self.curr_frame)
+            cv2.imshow("original feed", self.curr_frame)
+
+            # TODO: using the state option aloows only 1 btn at a time! not ideal..
+            '''
+            if self.state == "baby detection":
+                casc = self.get_ROI()  # get the ROI info using the cascades
+                for (a, b, c, d) in casc:
+                    self.draw_rect(a, b, c, d)  # draws the rect on the frame_output
+            '''
+            casc = self.get_ROI()  # get the ROI info using the cascades
+            for (a, b, c, d) in casc:
+                self.draw_rect(a, b, c, d)  # draws the rect on the frame_output
+
+            cv2.imshow("tempered feed", self.frame_output)
 
             self.prev_frame = self.curr_frame
 
@@ -464,3 +495,11 @@ def movement_detection(frame1, diff, min_x, max_x, min_y, max_y):  # TODO OR (fr
         # cv2.drawContours(frame1, contours, -1, (0, 255, 0), 2)
     # ============================================================
 '''
+
+# ========= TODO: temp main for testing ===================
+
+#App = FrameHelper()
+#App.frame_input =
+
+
+# ========= TODO: temp main for testing ===================
