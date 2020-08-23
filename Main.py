@@ -1,4 +1,4 @@
-from tkinter import *  # now can use the name of stuff without the "tkinter."
+from tkinter import *
 from tkinter import ttk
 # import Process_vid
 from Process_vid import FrameHelper
