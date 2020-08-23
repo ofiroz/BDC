@@ -2,49 +2,40 @@ import cv2
 import numpy as np
 import glob
 import threading
-# import person_center_new
-from matplotlib import pyplot as plt
-from detecto import core
 import re  # sort videos_name_list
-import os
 from time import *  # for sleep
 
 
 class FrameHelper(object):
 
     def __init__(self):
-        self.frame_input = np.zeros((10, 10))
-        self.frame_input2 = np.zeros((10, 10))  # needed for movement
+        self.prev_frame = np.zeros((10, 10))  # TODO for motion extraction
+        self.curr_frame = np.zeros((10, 10))
         self.frame_output = np.zeros((10, 10))
+
         self.videos_are_done = False
         self.vid_capture = []  # correct type?
 
         self.fps = 0  # needed?
         """
-        fps = cap.get(cv2.CAP_PROP_FPS)  # OpenCV2 version 2 used "CV_CAP_PROP_FPS"
+        fps = cap.get(cv2.CAP_PROP_FPS)
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         duration = frame_count / fps
         """
 
-        self.buffer_size = 250  # needed?
+        # self.buffer_size = 250  # needed?
         # self.window = np.hamming(self.buffer_size)
-        self.data_buffer = []  # needed?
-        self.freqs = []  # needed?
-        self.fft = []  # needed?
+        # self.data_buffer = []  # needed?
+        # self.freqs = []  # needed?
+        # self.fft = []  # needed?
 
         self.upper_body = cv2.CascadeClassifier('haarcascade_upperbody.xml')
         self.full_body = cv2.CascadeClassifier('haarcascade_fullbody.xml')
 
-        '''
-        if not os.path.exists(self.upper_body) or not os.path.exists(self.full_body):
-            print("Cascade file not present!")
+        # self.rect = [1, 1, 2, 2]
 
-        self.upper_body_cascade = cv2.CascadeClassifier(self.upper_body)
-        self.full_body_cascade = cv2.CascadeClassifier(self.full_body)
-        '''
-        self.rect = [1, 1, 2, 2]
-
-        self.last_center = np.array([0, 0])
+        self.last_center = np.array([0, 0])  # usage in shift
+        self.new_xywh = 0, 0, 0, 0  # will pass to it the ROI every iteration - usage in shift
 
         self.idx = 1
         self.find_faces = True
@@ -57,26 +48,31 @@ class FrameHelper(object):
         timer.start()
 
     def call_frame_processor(self):
-        # TODO self.two_sec_count()
+        # self.two_sec_count()  #TODO
         self.frame_processor()
 
     # calls check_for_person every 5 seconds
-    def frame_processor(self):
+    def frame_processor(self):  # TODO needed
+        print("frame_processor")
+        '''
         while True:
             if self.videos_are_done:
                 return
             # print('line 75')
             # print("========== Checking for person. will be back in 7-9 seconds ============")
-            self.check_for_person()
 
+            self.check_for_person()
+        '''
+
+    '''
     def check_for_person(self):
-        # center, circle_radius = person_center_new.Center_coordinates(self.frame_input)
+        # center, circle_radius = person_center_new.Center_coordinates(self.curr_frame)
         # center, circle_radius =
         self.center_coordinates()
         # circle_radius = int(circle_radius)
         # print("center: ",center,"circle_radius: ",circle_radius, sep=" ")
 
-        # self.frame_output = person_center_new.circle_center(self.frame_input, center, circle_radius)
+        # self.frame_output = person_center_new.circle_center(self.curr_frame, center, circle_radius)
         # self.circle_center(center, circle_radius)
 
         # TODO: fixed plt colors issue
@@ -100,7 +96,7 @@ class FrameHelper(object):
         # print(model.predict_top(image))
         # person_is_found = 0
         try:
-            labels, boxes, scores = model.predict_top(self.frame_input)
+            labels, boxes, scores = model.predict_top(self.curr_frame)
             min_x = 0
             min_y = 0
             max_x = 0
@@ -144,6 +140,7 @@ class FrameHelper(object):
 
         cv2.circle(self.frame_output, center_coordinates, radius, (0, 0, 255), 10)
         return  # center_coordinates, radius
+    '''
 
     # TODO circle_center
     '''
@@ -157,7 +154,6 @@ class FrameHelper(object):
             # cv2.waitKey(900000000)
         return # cv2.imread('ttt.JPG')  # TODO: add FAILED img
     '''
-
     # TODO circle_center
     # ======================================================================================================================
 
@@ -168,6 +164,12 @@ class FrameHelper(object):
     # sort by the num in string
     def natural_keys(self, text):
         return [self.atoi(c) for c in re.split(r'(\d+)', text)]
+
+    # initialize the frames every video
+    def init(self):
+        self.curr_frame = np.zeros((10, 10))
+        self.prev_frame = np.zeros((10, 10))
+        self.frame_output = np.zeros((10, 10))
 
     # active the process on every video by order
     def show_vid(self):
@@ -188,46 +190,31 @@ class FrameHelper(object):
         self.videos_are_done = True
         print("All Video Are Done - Thank You")
 
-    # TODO: readVideo isnt needen
-    '''
-    def readVideo(self, video_name):
-        self.vid_capture = cv2.VideoCapture(video_name)  # 0 for camera OR video_name
-        if self.vid_capture is None:
-            print("Failed to read the video")
-            exit
-        # resized_capture = resizeimage.resize_thumbnail(capture, [640, 360])
-        return self.vid_capture
-    '''
-    # TODO: readVideo isnt needen
-
     # get one video -> deliver motion detection
     def show_feed(self, vid_name):
         self.vid_capture = cv2.VideoCapture(vid_name)  # 0 for camera OR video_name
         if self.vid_capture is None:
             print("Failed to read the video")
             exit
-        # resized_capture = resizeimage.resize_thumbnail(capture, [640, 360])
 
-        #    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        #    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.prev_frame = self.vid_capture.read()
+
+        # resized_capture = resizeimage.resize_thumbnail(capture, [640, 360])
+        # frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        # frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         while self.vid_capture.isOpened():
             # Major issue - SOLVED
             # returns an error while trying to read frames when video is over.
-            if self.frame_input is None or self.frame_input2 is None:
-                #print("ERROR ~ line 208")
-                # init the frames every video
-                self.frame_input = np.zeros((10, 10))
-                self.frame_input2 = np.zeros((10, 10))
-                self.frame_output = np.zeros((10, 10))
+            _, self.curr_frame = self.vid_capture.read()
+            if self.curr_frame is None or self.prev_frame is None:
+                # print("ERROR ~ line 220")
+                self.init()
                 return
 
-            _, self.frame_input = self.vid_capture.read()
-            _, self.frame_input2 = self.vid_capture.read()
+            self.frame_output = self.curr_frame
 
-            self.frame_output = self.frame_input
-
-            # TODO=========== Center Movement Detection ================================
+            # =========== Center Movement Detection ================================
             '''
             diff = cv2.absdiff(frame1, frame2)
             # print(frame1.shape)
@@ -254,55 +241,49 @@ class FrameHelper(object):
                 #cv2.circle(frame1, (w/2, h/2), 30, (0, 150, 255), 2)
                 # cv2.drawContours(frame1, contours, -1, (0, 255, 0), 2)
             '''
-            # TODO=========== Center Movement Detection ================================
+            # =========== Center Movement Detection ================================
 
-            cv2.imshow("feed", self.frame_input)
+            cv2.imshow("feed", self.curr_frame)
 
-            # TODO: flage to sample frame
-            '''
-            # sample every 15th frame for person detection
-            if flag_to_ten[0] == 1:
-                frame1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2RGB)  # TODO - color fix from cv2 to plt
+            self.prev_frame = self.curr_frame
 
-                frame_sample[0] = frame1
-                # print("15 frame has passed")
-
-                flag_to_ten[0] = 15
-            else:
-                flag_to_ten[0] = flag_to_ten[0] - 1
-
-            # cv2.imshow("feed", diff)
-            # cv2.imshow("feed", dilated)
-
-            frame1 = frame2
-            _, frame2 = cap.read()
-            '''
-            # TODO: flage to sample frame
-
-            # TODO: play the waitkey to reach real live movement rate
-            if cv2.waitKey(60) == 27:
+            # play the waitkey to reach real live movement rate
+            if cv2.waitKey(20) == 27:
                 break
 
         cv2.destroyAllWindows()
         self.vid_capture.release()
 
-    def get_faces(self):
-        return
+    # returns the ROI found with the cascade TODO: returns casc with potentially many ROIs
+    def get_ROI(self):
+        gray = cv2.cvtColor(self.curr_frame, cv2.COLOR_BGR2GRAY)
+        Cascade = cv2.CascadeClassifier(self.cascade)  # TODO
+
+        casc = Cascade.detectMultiScale(gray, 1.05, 5, minSize=(130, 130))  # minSize=(W, H) TODO
+        '''
+            scaleFactor 1.05 is a good possible value for this, which means you use a small step for resizing, 
+            i.e. reduce size by 5%, you increase the chance of a matching size with the model for detection is found. 
+            This also means that the algorithm works slower since it is more thorough. 
+            You may increase it to as much as 1.4 for faster detection, with the risk of missing some faces altogether.
+        '''
+        # for (a, b, c, d) in casc:
+        #    self.draw_rect(a, b, c, d)
+        #    cv2.rectangle(img, (a, b), (a + c, b + d), (0, 255, 210), 4)
+        return casc
+
+    def draw_rect(self, x, y, w, h, color=(0, 255, 210), width=4):
+        cv2.rectangle(self.frame_output, (x, y), (x + w, y + h), color, width)
 
     # fix the rectangle the the face location
-    def shift(self, detected):  # TODO: needed - find what detected is!
-        x, y, w, h = detected
+    def shift(self):  # TODO: needed - find what detected is!
+        x, y, w, h = self.new_xywh
         center = np.array([x + 0.5 * w, y + 0.5 * h])
         shift = np.linalg.norm(center - self.last_center)
 
         self.last_center = center
         return shift
 
-    def draw_rect(self, rect, col=(0, 255, 0)):
-        x, y, w, h = rect
-        # print(rect)
-        # cv2.waitKey(300)
-        cv2.rectangle(self.frame_output, (x, y), (x + w, y + h), col, 1)
+
 # =========================================== TODO
 
 """
@@ -458,7 +439,7 @@ def show_vid():
 
 
 """
-
+'''
 def movement_detection(frame1, diff, min_x, max_x, min_y, max_y):  # TODO OR (frame1, diff, radius, (centerX, centerY))
     # ==================== Center Movement Detection ================================
     gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
@@ -482,11 +463,4 @@ def movement_detection(frame1, diff, min_x, max_x, min_y, max_y):  # TODO OR (fr
         # cv2.circle(frame1, (w/2, h/2), 30, (0, 150, 255), 2)
         # cv2.drawContours(frame1, contours, -1, (0, 255, 0), 2)
     # ============================================================
-
-# ========= TODO: temp main for testing ===================
-
-#App = FrameHelper()
-#App.frame_input =
-
-
-# ========= TODO: temp main for testing ===================
+'''
