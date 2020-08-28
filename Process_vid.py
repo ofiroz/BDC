@@ -3,13 +3,17 @@ import numpy as np
 import glob
 import threading
 import re  # sort videos_name_list
-from time import *  # for sleep
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.use('TkAgg')
 
+
+# from time import *  # for sleep
 
 class FrameHelper(object):
 
     def __init__(self):
-        self.prev_frame = np.zeros((10, 10))  # TODO for motion extraction
+        self.prev_frame = np.zeros((10, 10))  # for motion extraction
         self.curr_frame = np.zeros((10, 10))
         self.frame_output = np.zeros((10, 10))
 
@@ -27,26 +31,120 @@ class FrameHelper(object):
         # TODO: using the state option aloows only 1 btn at a time! not ideal..
         self.state = ''  # can be either pulse monitor/ breath monitor/ baby detection
 
-        # self.buffer_size = 250  # needed?
-        # self.window = np.hamming(self.buffer_size)
-        # self.data_buffer = []  # needed?
-        # self.freqs = []  # needed?
-        # self.fft = []  # needed?
+        self.motivation_flag = False  # when True - compare me cascade to the official opencv one
 
-        self.cascade = 'haar_cascade_upperbody_24x24_20it_90pos_5m46sec.xml'
-        # self.upper_body = cv2.CascadeClassifier('haarcascade_upperbody.xml')
-        # self.full_body = cv2.CascadeClassifier('haarcascade_fullbody.xml')
+        self.cascade_upper_body = 'haar_cascade_upperbody_24x24_20it_90pos_5m46sec.xml'
+        self.official_haarcascade_upperbody = 'haarcascade_upperbody.xml'
 
-        # self.rect = [1, 1, 2, 2]
-
-        self.last_center = np.array([0, 0])  # usage in shift
-
-        # TODO: for upper body cascade ill need to use the lower center of the ROI
+        # TODO: for upper body cascade ill need to use the lower center of the ROI (x+w/2,y)
         # TODO: ill monitor a ROI smaller then the original one
         self.new_xywh = 0, 0, 0, 0  # will pass to it the ROI every iteration - usage in shift
+        # self.center = np.array([0, 0])  # usage in shift ?
+        self.center = 0, 0
 
         self.idx = 1
         self.find_faces = True
+
+    # the first option in the GUI
+    # if the "motivation_flag" is True --> compare my cascade to the official opencv one
+    def detect_from_pics(self):
+        Cascade = cv2.CascadeClassifier(self.cascade_upper_body)
+        detected = []
+        not_detected = []
+
+        officialHAAR_motivation = []  # for motivation
+
+        pic_set = []  # TODO: make a method to do this..
+        path = glob.glob('Pictures_Set/*.jpg')  # choose right format and location
+
+        for name in path:
+            pic_set.append(name)
+
+        # TODO: output - two cv2 table: one with detected and one without
+        for p in pic_set:
+            flag = False  # is True if rect is found
+            img = cv2.imread(p)
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            casc = Cascade.detectMultiScale(gray, 1.05, 5, minSize=(130, 130))  # minSize=(W, H)
+
+            for (a, b, c, d) in casc:
+                cv2.rectangle(img, (a, b), (a + c, b + d), (0, 255, 210), 4)
+                flag = True
+            if flag is True:
+                detected.append(img)
+                continue
+            not_detected.append(img)
+
+            # ======= motivation ============
+            if self.motivation_flag is True:
+                mot_Cascade = cv2.CascadeClassifier(self.official_haarcascade_upperbody)
+                mot_casc = mot_Cascade.detectMultiScale(gray, 1.05, 5, minSize=(130, 130))  # minSize=(W, H)
+
+                for (a, b, c, d) in mot_casc:
+                    cv2.rectangle(img, (a, b), (a + c, b + d), (0, 255, 210), 4)
+                    officialHAAR_motivation.append(img)
+
+        if self.motivation_flag is True:
+            plt.figure('Motivation')
+            plot_mot = 331
+            for n in officialHAAR_motivation:
+                n = cv2.cvtColor(n, cv2.COLOR_BGR2RGB)  # convert from cv2(BGR) to plt(RGB)
+                plt.subplot(plot_mot)
+                plt.imshow(np.abs(n), cmap='gray')
+                plt.xticks([]), plt.yticks([])
+                plot_mot += 1
+                # ======= motivation ============
+
+            '''
+            height, width = img.shape[:2]
+            if height < width:
+                img = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
+            dim = (525, 700)  # (width, height)
+            resized = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+            
+            # height, width = img.shape[:2]
+            # print("height: " + str(height) + ", width: " + str(width))
+            '''
+        '''
+        detected_l = len(detected)
+        not_detected_l = len(not_detected)
+
+        
+        row = 1
+        col = 1
+        while True:
+            while col < 6:
+                if 
+                print()
+        '''
+
+        plot_d = 221
+        plot_nd = 331
+        plt.figure('Positive')
+        for n in detected:
+            n = cv2.cvtColor(n, cv2.COLOR_BGR2RGB)  # convert from cv2(BGR) to plt(RGB)
+            plt.subplot(plot_d)
+            plt.imshow(np.abs(n), cmap='gray')
+            plt.xticks([]), plt.yticks([])
+            plot_d += 1
+
+        plt.figure('Negative')
+        for n in not_detected:
+            n = cv2.cvtColor(n, cv2.COLOR_BGR2RGB)  # convert from cv2(BGR) to plt(RGB)
+            plt.subplot(plot_nd)
+            plt.imshow(np.abs(n), cmap='gray')
+            plt.xticks([]), plt.yticks([])
+            plot_nd += 1
+
+        print("Done processing all {} pictures".format(len(pic_set)))
+        plt.show()
+
+    # shows the bad results with the opencv official frontal face Haar casc
+    def motivation(self):
+        self.motivation_flag = True
+        self.detect_from_pics()
+        print("Done showing the deference in results between my custom cascade and the build-in cascade")
+
 
     def two_sec_count(self):
         if self.videos_are_done:
@@ -55,22 +153,14 @@ class FrameHelper(object):
         timer = threading.Timer(2, self.two_sec_count)  # Call `two_sec_count` in 2 seconds.
         timer.start()
 
-    def call_frame_processor(self):
+    def call_frame_processor(self):  # useless
         # self.two_sec_count()  #TODO
         self.frame_processor()
 
     # calls check_for_person every 5 seconds
-    def frame_processor(self):  # TODO not needed if using self. 
-        print("frame_processor")
-        '''
-        while True:
-            if self.videos_are_done:
-                return
-            # print('line 75')
-            # print("========== Checking for person. will be back in 7-9 seconds ============")
+    def frame_processor(self):  # TODO not needed if using self.
+        print("frame_processor is useless")
 
-            self.check_for_person()
-        '''
 
     '''
     def check_for_person(self):
@@ -265,57 +355,56 @@ class FrameHelper(object):
 
             # TODO: using the state option aloows only 1 btn at a time! not ideal..
             '''
-            if self.state == "baby detection":
+            if self.state == 'baby detection':
                 casc = self.get_ROI()  # get the ROI info using the cascades
                 for (a, b, c, d) in casc:
                     self.draw_rect(a, b, c, d)  # draws the rect on the frame_output
             '''
-            casc = self.get_ROI()  # get the ROI info using the cascades
-            for (a, b, c, d) in casc:
-                self.draw_rect(a, b, c, d)  # draws the rect on the frame_output
-
-            cv2.imshow("tempered feed", self.frame_output)
+            if self.state == 'baby detection':
+                casc = self.get_ROI()  # get the ROI info using the cascades
+                for (a, b, c, d) in casc:
+                    self.draw_rect(a, b, c, d)  # draws the rect on the frame_output
+                    self.center = a+c/2, b  # (x+w/2,y) update the lower center of the detected ROI
+                    self.new_xywh = a, b, c, d
+                cv2.imshow("tempered feed", self.frame_output)
 
             self.prev_frame = self.curr_frame
 
-            # play the waitkey to reach real live movement rate
+            # play the wait key to reach real live movement rate
             if cv2.waitKey(20) == 27:
                 break
 
         cv2.destroyAllWindows()
         self.vid_capture.release()
 
-    # returns the ROI found with the cascade TODO: returns casc with potentially many ROIs
+    # returns the ROI found with the cascade
+    # returns casc with potentially many ROIs
     def get_ROI(self):
         gray = cv2.cvtColor(self.curr_frame, cv2.COLOR_BGR2GRAY)
-        Cascade = cv2.CascadeClassifier(self.cascade)  # TODO
-
-        casc = Cascade.detectMultiScale(gray, 1.05, 5, minSize=(130, 130))  # minSize=(W, H) TODO
+        Cascade = cv2.CascadeClassifier(self.cascade_upper_body)
         '''
-            scaleFactor 1.05 is a good possible value for this, which means you use a small step for resizing, 
-            i.e. reduce size by 5%, you increase the chance of a matching size with the model for detection is found. 
-            This also means that the algorithm works slower since it is more thorough. 
-            You may increase it to as much as 1.4 for faster detection, with the risk of missing some faces altogether.
+        scaleFactor 1.05 is a good possible value for this, which means you use a small step for resizing, 
+        i.e. reduce size by 5%, you increase the chance of a matching size with the model for detection is found. 
+        This also means that the algorithm works slower since it is more thorough. 
+        You may increase it to as much as 1.4 for faster detection, with the risk of missing some faces altogether.
         '''
-        # for (a, b, c, d) in casc:
-        #    self.draw_rect(a, b, c, d)
-        #    cv2.rectangle(img, (a, b), (a + c, b + d), (0, 255, 210), 4)
+        casc = Cascade.detectMultiScale(gray, 1.05, 5, minSize=(130, 130))  # minSize=(W, H)
         return casc
 
     def draw_rect(self, x, y, w, h, color=(0, 255, 210), width=4):
         cv2.rectangle(self.frame_output, (x, y), (x + w, y + h), color, width)
 
+    '''
     # fix the rectangle the the face location
-    def shift(self):  # TODO: needed - find what detected is!
+    def shift(self):  # TODO: needed?
         x, y, w, h = self.new_xywh
-        center = np.array([x + 0.5 * w, y + 0.5 * h])
-        shift = np.linalg.norm(center - self.last_center)
+        new_center = np.array([x + 0.5 * w, y + 0.5 * h])
+        shift = np.linalg.norm(new_center - self.center)
 
-        self.last_center = center
+        self.center = new_center
         return shift
+    '''
 
-
-# =========================================== TODO
 
 """
 # checks for person in the frame every n seconds - uses person_center_new
@@ -496,10 +585,4 @@ def movement_detection(frame1, diff, min_x, max_x, min_y, max_y):  # TODO OR (fr
     # ============================================================
 '''
 
-# ========= TODO: temp main for testing ===================
 
-#App = FrameHelper()
-#App.frame_input =
-
-
-# ========= TODO: temp main for testing ===================
