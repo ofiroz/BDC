@@ -1,0 +1,10 @@
+Log files for 9 video samples - run for 7:12 minutes
+=======================================================
+
+Tested 1 frontal cascade with 93p and 390n.
+	haar_cascade_frontal_face_24x24_15it_85pos_39m15sec.xml
+
+Results were surprisingly good!
+	head to the side was reconized
+	eyes closed/ open was reconized
+	dark enviroment tested successfully

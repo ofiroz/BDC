@@ -1,0 +1,7 @@
+Logs from running all cascades an Videos\VIP_on_back.mp4
+====================================================
+
+ Start testing cascade: Cascades\haar_cascade_frontal_face_24x24_15it_85pos_39m15sec.xml
+   Done testing cascade: Cascades\haar_cascade_frontal_face_24x24_15it_85pos_39m15sec.xml
+
+Done running all cascade on Videos\VIP_on_back.mp4
