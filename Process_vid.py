@@ -17,6 +17,8 @@ class FrameHelper(object):
         self.curr_frame = np.zeros((10, 10))
         self.frame_output = np.zeros((10, 10))
 
+        self.flag_end = False  # if "Ctrl + e" is pressed on the GUI it will be True --> end program
+
         self.rotate = False
 
         self.videos_are_done = False
@@ -310,6 +312,8 @@ class FrameHelper(object):
         # frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         while self.vid_capture.isOpened():
+            if self.flag_end is True:  # [x] OR Ctrl+e pressed in the GUI
+                exit(0)
             # Major issue - SOLVED
             # returns an error while trying to read frames when video is over.
             _, self.curr_frame = self.vid_capture.read()
