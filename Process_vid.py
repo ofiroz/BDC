@@ -7,6 +7,7 @@ import re  # sort videos_name_list
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
+
 # from time import *  # for sleep
 
 
@@ -79,17 +80,17 @@ class FrameHelper(object):
                 continue
             not_detected.append(img)
 
-            # ======= motivation ============
+            # ======= motivation ====================================
             if self.motivation_flag is True:
                 mot_Cascade = cv2.CascadeClassifier(self.official_haarcascade_upperbody)
-                mot_casc = mot_Cascade.detectMultiScale(gray, 1.05, 5, minSize=(130, 130))  # minSize=(W, H)
+                mot_casc = mot_Cascade.detectMultiScale(gray, 1.05, 5, minSize=(100, 100))  # minSize=(W, H)
 
                 for (a, b, c, d) in mot_casc:
                     cv2.rectangle(img, (a, b), (a + c, b + d), (0, 255, 210), 4)
                     officialHAAR_motivation.append(img)
 
         if self.motivation_flag is True:
-            plt.figure('Motivation')
+            plt.figure('Motivation: using haarcascade_upperbody.xml')
             plot_mot = 331
             for n in officialHAAR_motivation:
                 n = cv2.cvtColor(n, cv2.COLOR_BGR2RGB)  # convert from cv2(BGR) to plt(RGB)
@@ -97,7 +98,7 @@ class FrameHelper(object):
                 plt.imshow(np.abs(n), cmap='gray')
                 plt.xticks([]), plt.yticks([])
                 plot_mot += 1
-                # ======= motivation ============
+                # ======= motivation ====================================
 
         # plot_d = 221
         plot_d = 331
@@ -118,8 +119,13 @@ class FrameHelper(object):
             plt.xticks([]), plt.yticks([])
             plot_nd += 1
 
-        print("Done processing all {} pictures".format(len(pic_set)))
-        plt.show()  # will close after end_program. added plt.close() in Main.py
+        self.motivation_flag = False
+        try:
+            plt.show()  # will close after end_program. added plt.close() in Main.py
+            print("Done processing all {} pictures".format(len(pic_set)))
+        except:
+            print("please close all plots")
+            return
 
     # shows the bad results with the opencv official frontal face Haar casc
     def motivation_pics(self):
@@ -485,3 +491,5 @@ def movement_detection(frame1, diff, min_x, max_x, min_y, max_y):  # TODO OR (fr
         # cv2.drawContours(frame1, contours, -1, (0, 255, 0), 2)
     # ============================================================
 '''
+
+
