@@ -2,23 +2,9 @@ import numpy as np
 import time
 import cv2
 import pylab
-import os
-import sys
 
-'''
-def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
-'''
 
 class findFaceGetPulse(object):
-
     def __init__(self, bpm_limits=[], data_spike_limit=250,
                  face_detector_smoothness=10):
 
@@ -26,7 +12,7 @@ class findFaceGetPulse(object):
         self.frame_out = np.zeros((10, 10))
         self.fps = 0
         self.buffer_size = 250
-        #self.window = np.hamming(self.buffer_size)
+        # self.window = np.hamming(self.buffer_size)
         self.data_buffer = []
         self.times = []
         self.ttimes = []
@@ -37,13 +23,14 @@ class findFaceGetPulse(object):
         self.t0 = time.time()
         self.bpms = []
         self.bpm = 0
-        dpath = "haarcascade_frontalface_alt.xml"
+        # dpath = "haarcascade_frontalface_alt.xml"
+        self.dpath = "haar_cascade_frontal_face_24x24_15it_85pos_39m15sec.xml"
         '''
         dpath = resource_path("haarcascade_frontalface_alt.xml")
         if not os.path.exists(dpath):
             print("Cascade file not present!")
         '''
-        self.face_cascade = cv2.CascadeClassifier(dpath)
+        self.face_cascade = cv2.CascadeClassifier(self.dpath)
 
         self.face_rect = [1, 1, 2, 2]
         self.last_center = np.array([0, 0])
@@ -53,7 +40,7 @@ class findFaceGetPulse(object):
 
         self.idx = 1
         self.find_faces = True
-
+        
     def find_faces_toggle(self):
         self.find_faces = not self.find_faces
         return self.find_faces
@@ -127,7 +114,7 @@ class findFaceGetPulse(object):
         pylab.savefig("data_fft.png")
         quit()
 
-    def run(self, cam): 
+    def run(self):
         self.times.append(time.time() - self.t0)
         self.frame_out = self.frame_in
         self.gray = cv2.equalizeHist(cv2.cvtColor(self.frame_in,
@@ -137,18 +124,15 @@ class findFaceGetPulse(object):
         col = (100, 255, 100)
         if self.find_faces:
             cv2.putText(
-                self.frame_out, "Press 'C' to change camera (current: %s)" % str(
-                    cam),
-                (10, 25), cv2.FONT_HERSHEY_PLAIN, 1.25, col)
-            cv2.putText(
                 self.frame_out, "Press 'S' to lock face and begin",
-                       (10, 50), cv2.FONT_HERSHEY_PLAIN, 1.25, col)
-            cv2.putText(self.frame_out, "Press 'Esc' to quit",
-                       (10, 75), cv2.FONT_HERSHEY_PLAIN, 1.25, col)
+                       (10, 20), cv2.FONT_HERSHEY_PLAIN, 1, col)
+
             self.data_buffer, self.times, self.trained = [], [], False
             
-            detected = list(self.face_cascade.detectMultiScale(self.gray, scaleFactor=1.3, minNeighbors=4, minSize=(50, 50), flags=cv2.CASCADE_SCALE_IMAGE))
-            #print(len(detected))
+            # detected = list(self.face_cascade.detectMultiScale(self.gray
+            # , scaleFactor=1.3, minNeighbors=4, minSize=(50, 50), flags=cv2.CASCADE_SCALE_IMAGE))  # original param
+            detected = list(self.face_cascade.detectMultiScale(self.gray
+                                                               , scaleFactor=1.05, minNeighbors=5, minSize=(100, 100)))
             if len(detected) > 0:
                 detected.sort(key=lambda a: a[-1] * a[-2])
 
@@ -156,35 +140,29 @@ class findFaceGetPulse(object):
                     self.face_rect = detected[-1]
                     # print("self.face_rect ")
                     # print(self.face_rect)
-            forehead1 = self.get_subface_coord(0.5, 0.18, 0.25, 0.15)
+            # get_subface_coord(self, fh_x, fh_y, fh_w, fh_h) original fh_y was 0.18
+            forehead1 = self.get_subface_coord(0.5, 0.25, 0.25, 0.15)
             self.draw_rect(self.face_rect, col=(255, 0, 0))
             x, y, w, h = self.face_rect
             
-            cv2.putText(self.frame_out, "Face", (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
+            # cv2.putText(self.frame_out, "Face", (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
             self.draw_rect(forehead1)
             x, y, w, h = forehead1
-            cv2.putText(self.frame_out, "Forehead", (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
-            
-            #cv2.imshow("Original",self.frame_out)
-            #cv2.waitKey(100)
+            cv2.putText(self.frame_out, "Forehead", (x-7, y-2), cv2.FONT_HERSHEY_PLAIN, 0.6, col)
             return
         
         if set(self.face_rect) == set([1, 1, 2, 2]):
             return
 
         cv2.putText(
-            self.frame_out, "Press 'C' to change camera (current: %s)" % str(
-                cam),
-            (10, 25), cv2.FONT_HERSHEY_PLAIN, 1.25, col)
-        cv2.putText(
             self.frame_out, "Press 'S' to restart",
-                   (10, 50), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
+                   (10, 20), cv2.FONT_HERSHEY_PLAIN, 1, col)
         cv2.putText(self.frame_out, "Press 'D' to toggle data plot",
-                   (10, 75), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
-        cv2.putText(self.frame_out, "Press 'Esc' to quit",
-                   (10, 100), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
+                   (10, 40), cv2.FONT_HERSHEY_PLAIN, 1, col)
 
-        forehead1 = self.get_subface_coord(0.5, 0.18, 0.25, 0.15)
+
+        # get_subface_coord(self, fh_x, fh_y, fh_w, fh_h) original fh_y was 0.18
+        forehead1 = self.get_subface_coord(0.5, 0.25, 0.25, 0.15)
         self.draw_rect(forehead1)
 
         vals = self.get_subface_means(forehead1)
@@ -237,7 +215,8 @@ class findFaceGetPulse(object):
             self.bpm = self.freqs[idx2]
             self.idx += 1
 
-            x, y, w, h = self.get_subface_coord(0.5, 0.18, 0.25, 0.15)
+            # get_subface_coord(self, fh_x, fh_y, fh_w, fh_h) original fh_y was 0.18
+            x, y, w, h = self.get_subface_coord(0.5, 0.25, 0.25, 0.15)
             r = alpha * self.frame_in[y:y + h, x:x + w, 0]
             g = alpha * \
                 self.frame_in[y:y + h, x:x + w, 1] + \
@@ -253,9 +232,9 @@ class findFaceGetPulse(object):
             # self.bpms.append(bpm)
             # self.ttimes.append(time.time())
             if gap:
-                text = "(estimate: %0.1f bpm, wait %0.0f s)" % (self.bpm, gap)
+                text = "(estimate: %0.1f bpm wait %0.0fs)" % (self.bpm, gap)
             else:
                 text = "(estimate: %0.1f bpm)" % (self.bpm)
-            tsize = 1
+            tsize = 0.7
             cv2.putText(self.frame_out, text,
-                       (int(x - w / 2), int(y)), cv2.FONT_HERSHEY_PLAIN, tsize, col)
+                       (int(x - w * 2), int(y)), cv2.FONT_HERSHEY_PLAIN, tsize, col)
