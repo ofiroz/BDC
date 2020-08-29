@@ -1,14 +1,14 @@
 import cv2
 import numpy as np
 import glob
-import threading
+import threading  # TODO: delete after deleting two_seconds
+from threading import Thread
 import re  # sort videos_name_list
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
-
-
 # from time import *  # for sleep
+
 
 class FrameHelper(object):
 
@@ -30,13 +30,15 @@ class FrameHelper(object):
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         duration = frame_count / fps
         """
-        # TODO: using the state option aloows only 1 btn at a time! not ideal..
+        # using the state option allows only 1 btn at a time! not ideal..
         self.state = ''  # can be either pulse monitor/ breath monitor/ baby detection
 
         self.motivation_flag = False  # when True - compare me cascade to the official opencv one
 
         self.cascade_upper_body = 'haar_cascade_upperbody_24x24_20it_90pos_5m46sec.xml'
+        self.cascade_face = 'haar_cascade_frontal_face_24x24_15it_85pos_39m15sec.xml'
         self.official_haarcascade_upperbody = 'haarcascade_upperbody.xml'
+        self.official_haarcascade_frontalface = 'haarcascade_frontalface_alt.xml'
 
         # TODO: for upper body cascade ill need to use the lower center of the ROI (x+w/2,y)
         # TODO: ill monitor a ROI smaller then the original one
@@ -97,30 +99,8 @@ class FrameHelper(object):
                 plot_mot += 1
                 # ======= motivation ============
 
-            '''
-            height, width = img.shape[:2]
-            if height < width:
-                img = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
-            dim = (525, 700)  # (width, height)
-            resized = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
-            
-            # height, width = img.shape[:2]
-            # print("height: " + str(height) + ", width: " + str(width))
-            '''
-        '''
-        detected_l = len(detected)
-        not_detected_l = len(not_detected)
-
-        
-        row = 1
-        col = 1
-        while True:
-            while col < 6:
-                if 
-                print()
-        '''
-
-        plot_d = 221
+        # plot_d = 221
+        plot_d = 331
         plot_nd = 331
         plt.figure('Positive')
         for n in detected:
@@ -139,14 +119,92 @@ class FrameHelper(object):
             plot_nd += 1
 
         print("Done processing all {} pictures".format(len(pic_set)))
-        plt.show()
+        plt.show()  # will close after end_program. added plt.close() in Main.py
 
     # shows the bad results with the opencv official frontal face Haar casc
-    def motivation(self):
+    def motivation_pics(self):
         self.motivation_flag = True
         self.detect_from_pics()
-        print("Done showing the deference in results between my custom cascade and the build-in cascade")
+        self.motivation_flag = False
 
+    # new thread to motivation_vid
+    def motivation_vid_t(self):
+        t = Thread(target=self.motivation_vid)
+        t.start()
+
+    # compare the results with my casc and the opencv casc
+    def motivation_vid(self):
+        my_casc = cv2.CascadeClassifier(self.cascade_face)
+        official_face_cascade = cv2.CascadeClassifier(self.official_haarcascade_frontalface)
+        video_src = "VIP_1.mp4"
+        # video_src2 = "VIP_sample2.mp4"
+        video_src2 = "v4.mp4"
+
+        rotate = False
+        rotate2 = False
+
+        cap = cv2.VideoCapture(video_src)
+        cap2 = cv2.VideoCapture(video_src2)
+        _, frame1 = cap.read()
+        hi, wi, _ = frame1.shape
+        if hi < 400:
+            rotate = True
+
+        _, frame1 = cap2.read()
+        hi, wi, _ = frame1.shape
+        if hi < 400:
+            rotate2 = True
+
+        while True:
+            if self.flag_end is True:  # [x] OR Ctrl+e pressed in the GUI
+                exit(0)
+
+            ret, img = cap.read()
+            ret2, img3 = cap2.read()
+            if img is None or img3 is None:
+                break
+
+            if rotate:
+                img = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
+            if rotate2:
+                img3 = cv2.rotate(img3, cv2.cv2.ROTATE_90_CLOCKWISE)
+
+            img2 = img.copy()
+            img4 = img3.copy()
+
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+
+            gray3 = cv2.cvtColor(img3, cv2.COLOR_BGR2GRAY)
+            gray4 = cv2.cvtColor(img4, cv2.COLOR_BGR2GRAY)
+
+            casc = my_casc.detectMultiScale(gray, 1.05, 5, minSize=(100, 100))
+            casc2 = my_casc.detectMultiScale(gray3, 1.05, 5, minSize=(100, 100))
+            official_casc = official_face_cascade.detectMultiScale(gray2, 1.05, 5, minSize=(100, 100))
+            official_casc2 = official_face_cascade.detectMultiScale(gray4, 1.05, 5, minSize=(100, 100))
+
+            for (a, b, c, d) in casc:
+                cv2.rectangle(img, (a, b), (a + c, b + d), (0, 255, 210), 4)
+
+            for (a, b, c, d) in casc2:
+                cv2.rectangle(img3, (a, b), (a + c, b + d), (0, 255, 210), 4)
+
+            for (x, y, z, w) in official_casc:
+                cv2.rectangle(img2, (x, y), (x + z, y + w), (0, 255, 210), 4)
+
+            for (x, y, z, w) in official_casc2:
+                cv2.rectangle(img4, (x, y), (x + z, y + w), (0, 255, 210), 4)
+
+            # cv2.imshow('feed', img)
+            # cv2.imshow('feed_official', img2)
+
+            cv2.imshow("1: My Cascade VS OpenCV Build-in Cascade (Face)", np.hstack([img, img2]))
+            cv2.imshow("2: My Cascade VS OpenCV Build-in Cascade (Face)", np.hstack([img3, img4]))
+
+            if cv2.waitKey(1) == 27:
+                break
+        # print("Done showing the deference in results between my custom cascade and the build-in cascade")
+        cv2.destroyAllWindows()
 
     def two_sec_count(self):
         if self.videos_are_done:
@@ -357,13 +415,6 @@ class FrameHelper(object):
 
             cv2.imshow("original feed", self.curr_frame)
 
-            # TODO: using the state option aloows only 1 btn at a time! not ideal..
-            '''
-            if self.state == 'baby detection':
-                casc = self.get_ROI()  # get the ROI info using the cascades
-                for (a, b, c, d) in casc:
-                    self.draw_rect(a, b, c, d)  # draws the rect on the frame_output
-            '''
             if self.state == 'baby detection':
                 casc = self.get_ROI()  # get the ROI info using the cascades
                 for (a, b, c, d) in casc:
@@ -409,160 +460,6 @@ class FrameHelper(object):
         return shift
     '''
 
-
-"""
-# checks for person in the frame every n seconds - uses person_center_new
-def check_for_person():
-    image_path = frame_sample[0]
-
-    center, circle_radius = person_center_new.Center_coordinates(image_path)
-    circle_radius = int(circle_radius)
-    img = person_center_new.circle_center(image_path, center, circle_radius)
-
-    # TODO: fixed plt colors issue
-    # OpenCV represents RGB images as multi - dimensional NumPy arrays… but in reverse order!
-    # need to do is convert the image from BGR to RGB
-    # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-    plt.imshow(img, cmap='gray')
-    plt.xticks([]), plt.yticks([])
-    plt.show()
-
-    # print("thread finished 'check_for_person'")
-
-
-# test for timing - DELETE
-def two_sec_count():
-    # if all videos are done
-    if done_all_videos[0] is 1:
-        return
-    print('Two seconds has passed')
-    timer = threading.Timer(2, two_sec_count)  # Call `two_sec_count` in 2 seconds.
-    timer.start()
-
-
-def readVideo(video_name):
-    capture = cv2.VideoCapture(video_name)  # 0 for camera OR video_name
-    if capture is None:
-        print("Failed to read the image")
-        exit
-    # resized_capture = resizeimage.resize_thumbnail(capture, [640, 360])
-
-    return capture
-
-
-# get one video -> deliver motion detection
-def show_and_sample_frame(vid_name):
-    cap = readVideo(vid_name)
-
-    #    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    #    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-    _, frame1 = cap.read()
-    _, frame2 = cap.read()
-    # print(frame1.shape)
-
-    while cap.isOpened():
-        # Major issue - SOLVED
-        # returns an error while trying to read frames when video is over.
-        if frame1 is None or frame2 is None:
-            # print("success")
-            return
-
-        # ==================== Center Movement Detection ================================
-        '''
-        diff = cv2.absdiff(frame1, frame2)
-        # print(frame1.shape)
-        # print(frame2.shape)
-
-        gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
-        blur = cv2.GaussianBlur(gray, (5, 5), 0)
-        # TODO the Threshhold says- every pixel of the diff higher than 18 - become 255 (white)
-        _, thresh = cv2.threshold(blur, 18, 255,
-                                  cv2.THRESH_BINARY)  # thresh of 5 reconize breathing. 2 will reconize pulse!!
-
-        dilated = cv2.dilate(thresh, None, iterations=3)
-
-        # cv2.imshow("feed", dilated)
-
-        contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-        for contour in contours:
-            (x, y, w, h) = cv2.boundingRect(contour)
-
-            if cv2.contourArea(contour) < 1000:
-                continue
-            cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 150, 255), 2) # enlarge the image in the rectangle
-            #cv2.circle(frame1, (w/2, h/2), 30, (0, 150, 255), 2)
-            # cv2.drawContours(frame1, contours, -1, (0, 255, 0), 2)
-        '''
-        # ============================================================
-        cv2.imshow("feed", frame1)
-
-        # sample every 15th frame for person detection
-        if flag_to_ten[0] == 1:
-            frame1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2RGB)
-
-            frame_sample[0] = frame1
-            # print("15 frame has passed")
-
-            flag_to_ten[0] = 15
-        else:
-            flag_to_ten[0] = flag_to_ten[0] - 1
-
-        # cv2.imshow("feed", diff)
-        # cv2.imshow("feed", dilated)
-
-        frame1 = frame2
-        _, frame2 = cap.read()
-
-        # TODO: play the waitkey to reach real live movement rate
-        if cv2.waitKey(40) == 27:
-            break
-
-    cv2.destroyAllWindows()
-    cap.release()
-
-'''
-NOT IN USE
-'''
-
-# calls check_for_person every 5 seconds
-def frame_processor():
-    while True:
-        # if all videos are done
-        if done_all_videos[0] is 1:
-            print("All Video Are Done - Thank You")
-            return
-        print("========== Checking for person. will be back in 7-9 seconds ============")
-        check_for_person()
-
-        # sleep(1)
-
-
-def call_frame_processor():
-    two_sec_count()
-    frame_processor()
-
-
-# get ALL videos
-def show_vid():
-    videos_name_list = []
-    path = glob.glob('Video Samples/*.mp4')  # choose right format and location
-
-    for f in path:  # check if gets names OR the videos (MP4)
-        # print(tmp)
-        videos_name_list.append(f)
-
-    # show_and_sample_frame('Video Samples\sample9.mp4')
-    for vid in videos_name_list:
-        print('Video Path:', vid)  # video name
-        show_and_sample_frame(vid)
-
-    done_all_videos[0] = 1
-
-
-"""
 '''
 def movement_detection(frame1, diff, min_x, max_x, min_y, max_y):  # TODO OR (frame1, diff, radius, (centerX, centerY))
     # ==================== Center Movement Detection ================================
@@ -588,5 +485,3 @@ def movement_detection(frame1, diff, min_x, max_x, min_y, max_y):  # TODO OR (fr
         # cv2.drawContours(frame1, contours, -1, (0, 255, 0), 2)
     # ============================================================
 '''
-
-
