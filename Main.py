@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import os
-# import Process_vid
 from Process_vid import FrameHelper
 from threading import Thread
 import get_pulse
@@ -13,11 +12,10 @@ warnings.filterwarnings("ignore")
 class GUI:
     def __init__(self):
         self.proc = FrameHelper()  # FrameHelper obj
-
+        self.App = get_pulse.getPulseApp()  # getPulseApp obj
         self.root = Tk()  # Tk obj
         self.root.bind('<Control-e>', lambda e: self.end_program())  # closes the program
         self.root.protocol("WM_DELETE_WINDOW", self.end_program)  # ask when closing
-        self.flag_end = True  # if "Ctrl + e" is pressed it will be False
 
         self.menubutton = Menubutton(self.root, text="Menu")
         self.menubutton.menu = Menu(self.menubutton)
@@ -94,8 +92,7 @@ class GUI:
     # 2. detect from video
     def baby_detection(self):
         self.disable(self.btn1)
-        # self.proc.state = 'baby detection'
-        # print('self.proc.state', self.proc.state)
+
         newWindow = Toplevel(self.root)
         newWindow.title("tk2")
         Label(newWindow, text="Please choose the detection platform:").grid(row=1, column=0, columnspan=2)
@@ -121,37 +118,28 @@ class GUI:
     # Run the cascade on a video
     def baby_detection_vid(self):
         print("Commencing baby detection on a Video")
-        self.proc.state = 'baby detection'  # TODO: reuse of the video processing method (show_feed)
+        self.proc.state = 'baby detection'  # TODO: reuse of the video processing method (show_feed) and its vars!
         t2 = Thread(target=self.proc.show_vid)
         t2.start()
 
     def pulse_monitor(self):
         self.disable(self.btn3)
-        # TODO: solve the [ WARN:0]
-        # TODO: cancel the camera 0 activation
-        App = get_pulse.getPulseApp()
-
-        t3 = Thread(target=App.MY_main_loop)
+        t3 = Thread(target=self.App.MY_main_loop)
         t3.start()
 
-    # Ctrl+e OR clicking [x] will end the program
+    # clicking Ctrl+e OR [x] will end the program
     def end_program(self):
-        print("FLAG updated to FALSE - closing program")
-        self.flag_end = False  # will kill all running threads
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            print("Program was terminated. Both flags updated - closing program")
+            self.proc.flag_end = True  # will kill all running threads in Process_vid
+            self.App.flag_end = True  # will kill all running threads in get_pulse
             self.root.destroy()
 
 
 if __name__ == "__main__":
     run = GUI().root
+    # allows changes after the GUI was lunched
+    # while True:
+    #    run.update_idletasks()
+    #    run.update()
     run.mainloop()
-
-# TODO: make a combo box in the GUI for file name selection
-# https://www.linkedin.com/learning/python-gui-development-with-tkinter-2/making-selections-with-the-combobox-and-spinbox?u=2101329
-
-'''
-file_name = StringVar()
-combobox = ttk.Combobox(root, textVariable = file_name)
-combobox.pack()
-combobox.config(values = [list of names]
-'''
