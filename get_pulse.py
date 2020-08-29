@@ -75,7 +75,7 @@ class getPulseApp(object):
                 self.key_controls[key]()
 
     def MY_main_loop(self):
-        vid = "v6.mp4"
+        vid = "lib/v6.mp4"  # r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\ProjectReWriten\lib"
         cap = cv2.VideoCapture(vid)
 
         while True:
