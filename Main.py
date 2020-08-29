@@ -5,6 +5,7 @@ import os
 from Process_vid import FrameHelper
 from threading import Thread
 import get_pulse
+import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -17,12 +18,18 @@ class GUI:
         self.root.bind('<Control-e>', lambda e: self.end_program())  # closes the program
         self.root.protocol("WM_DELETE_WINDOW", self.end_program)  # ask when closing
 
+
         self.menubutton = Menubutton(self.root, text="Menu")
+
         self.menubutton.menu = Menu(self.menubutton)
         self.menubutton["menu"] = self.menubutton.menu
 
-        # shows the bad results with the opencv official frontal face Haar casc
-        self.menubutton.menu.add_command(label="Motivation", command=self.proc.motivation)
+        self.motivation = Menu(self.menubutton)  # sub-menu
+        self.menubutton.menu.add_cascade(menu=self.motivation, label="Motivation")
+        self.motivation.add_command(label="Pictures", command=self.proc.motivation_pics)
+        self.motivation.add_command(label="VIdeo", command=self.proc.motivation_vid_t)  # needs a new thread
+
+        self.menubutton.menu.add_separator()
 
         self.menubutton.menu.add_command(label="Open Cascade Folder", command=lambda: self.open_folder(self.casc_path))
         self.menubutton.menu.add_command(label="Open Logs Folder", command=lambda: self.open_folder(self.logs_path))
@@ -30,7 +37,6 @@ class GUI:
         self.menubutton.menu.add_command(label="Open Pictures Folder", command=lambda: self.open_folder(self.pics_path))
         self.menubutton.grid(row=0)
 
-        # self.buttons_state = [0, 0, 0]  # if pressed = 1
         self.label = ttk.Label(self.root, text="Some Welcome Label")
         self.label.grid(row=1, column=0, columnspan=3)
         self.label.config(font=('Ariel', 18, 'bold'))  # font_name, size, extra (bold, underline..)
@@ -83,9 +89,6 @@ class GUI:
         t2 = Thread(target=self.proc.show_vid)  # Shows the video
         t2.start()
         t1.start()
-        # when the program ends kill threads
-        # t1.join()
-        # t2.join()
 
     # opens a new window with 2 choices:
     # 1. detect from pictures
@@ -133,6 +136,7 @@ class GUI:
             print("Program was terminated. Both flags updated - closing program")
             self.proc.flag_end = True  # will kill all running threads in Process_vid
             self.App.flag_end = True  # will kill all running threads in get_pulse
+            plt.close('all')
             self.root.destroy()
 
 
