@@ -47,5 +47,7 @@ https://docs.opencv.org/2.4/modules/video/doc/motion_analysis_and_object_trackin
 
 https://nanonets.com/blog/optical-flow/ - optical-flow
 
-https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/ - Gunnar Farneback algorithm (optical flow)
+https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/ - preview to the Gunnar Farneback algorithm (optical flow)
+
+https://www.diva-portal.org/smash/get/diva2:273847/FULLTEXT01.pdf - Gunnar Farneback algorithm (optical flow)
 
