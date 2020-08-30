@@ -45,3 +45,7 @@ https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/
 
 https://docs.opencv.org/2.4/modules/video/doc/motion_analysis_and_object_tracking.html - calculating an optical flow (Lucas-Kanade) for breath monitoring
 
+https://nanonets.com/blog/optical-flow/ - optical-flow
+
+https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/ - Gunnar Farneback algorithm (optical flow)
+
