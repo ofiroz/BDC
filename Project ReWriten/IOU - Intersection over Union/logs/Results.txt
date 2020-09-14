@@ -1,0 +1,19 @@
+In a recognition test on 70 samples 14/70 was not recognize ==> 80% SUCCESS!
+
+The "hard" images are:
+
+line	image<x>.jpg
+---------------------
+26	32
+28	34
+29	35
+33	39
+46	50
+51-55	55-59
+61-63	64-66
+65	68
+
+Those samples will be removed - they are useless for the IOU calculation...
+
+FYI
+processing was not chronological - (s1, s2, s10) will be processed as (s1, s10, s2)
