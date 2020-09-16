@@ -27,7 +27,7 @@ class getPulseApp(object):
 
     def toggle_search(self):
         state = self.processor.find_faces_toggle()  # change self.find_faces state - False/ True
-        print("face detection lock =", not state)
+        # print("face detection lock =", not state)
 
     def toggle_display_plot(self):
         if self.bpm_plot:
@@ -67,6 +67,7 @@ class getPulseApp(object):
         """
         self.pressed = waitKey(10) & 255  # wait for keypress for 10 ms
         if self.pressed == 27:  # exit program on 'esc'
+            # TODO enable btn2/3 after Esc
             print("Exiting")
             sys.exit()
 
@@ -75,7 +76,8 @@ class getPulseApp(object):
                 self.key_controls[key]()
 
     def MY_main_loop(self):
-        vid = "lib/v6.mp4"  # r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\ProjectReWriten\lib"
+        vid = r"Samples\Videos_Pulse\v6.mp4"  # can also use '/' without the raw flag...
+
         cap = cv2.VideoCapture(vid)
 
         while True:
