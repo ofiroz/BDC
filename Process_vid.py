@@ -12,7 +12,6 @@ matplotlib.use('TkAgg')
 
 
 class FrameHelper(object):
-
     def __init__(self):
         self.prev_frame = np.zeros((10, 10))  # for motion extraction
         self.curr_frame = np.zeros((10, 10))
@@ -23,7 +22,7 @@ class FrameHelper(object):
         self.rotate = False
 
         self.videos_are_done = False
-        self.vid_capture = []  # correct type?
+        self.vid_capture = []
 
         self.fps = 0  # needed?
         """
@@ -36,6 +35,7 @@ class FrameHelper(object):
 
         self.motivation_flag = False  # when True - compare me cascade to the official opencv one
 
+        # self.upperB_or_face =
         self.cascade_upper_body = 'haar_cascade_upperbody_24x24_20it_90pos_5m46sec.xml'
         self.cascade_face = 'haar_cascade_frontal_face_24x24_15it_85pos_39m15sec.xml'
         self.official_haarcascade_upperbody = 'haarcascade_upperbody.xml'
@@ -52,15 +52,15 @@ class FrameHelper(object):
 
     # the first option in the GUI
     # if the "motivation_flag" is True --> compare my cascade to the official opencv one
-    def detect_from_pics(self):
-        Cascade = cv2.CascadeClassifier(self.cascade_upper_body)
+    def detect_from_pics(self, selected_casc):
+        Cascade = cv2.CascadeClassifier(selected_casc)
         detected = []
         not_detected = []
 
         officialHAAR_motivation = []  # for motivation
 
         pic_set = []  # TODO: make a method to do this..
-        path = glob.glob('Pictures_Set/*.jpg')  # choose right format and location
+        path = glob.glob('Samples/Pictures_Set/*.jpg')  # choose right format and location
 
         for name in path:
             pic_set.append(name)
@@ -90,7 +90,7 @@ class FrameHelper(object):
                     officialHAAR_motivation.append(img)
 
         if self.motivation_flag is True:
-            plt.figure('Motivation: using haarcascade_upperbody.xml')
+            plt.figure('Motivation: using the original haarcascade_upperbody.xml')
             plot_mot = 331
             for n in officialHAAR_motivation:
                 n = cv2.cvtColor(n, cv2.COLOR_BGR2RGB)  # convert from cv2(BGR) to plt(RGB)
@@ -130,7 +130,7 @@ class FrameHelper(object):
     # shows the bad results with the opencv official frontal face Haar casc
     def motivation_pics(self):
         self.motivation_flag = True
-        self.detect_from_pics()
+        self.detect_from_pics(self.cascade_upper_body)
         self.motivation_flag = False
 
     # new thread to motivation_vid
@@ -219,15 +219,6 @@ class FrameHelper(object):
         timer = threading.Timer(2, self.two_sec_count)  # Call `two_sec_count` in 2 seconds.
         timer.start()
 
-    def call_frame_processor(self):  # useless
-        # self.two_sec_count()  #TODO
-        self.frame_processor()
-
-    # calls check_for_person every 5 seconds
-    def frame_processor(self):  # TODO not needed if using self.
-        print("frame_processor is useless")
-
-
     '''
     def check_for_person(self):
         # center, circle_radius = person_center_new.Center_coordinates(self.curr_frame)
@@ -307,6 +298,8 @@ class FrameHelper(object):
     '''
 
     # TODO circle_center
+    # calculate main vector length, radius = (main vector length) * 0.2
+    # radius = (((max_x - min_x) ** 2 + (max_y - min_y) ** 2) ** 0.5) * 0.2
     '''
     def circle_center(self, center_coordinates, radius):
         # image = cv2.imread(image_path)
@@ -341,9 +334,9 @@ class FrameHelper(object):
         self.frame_output = cv2.rotate(self.frame_output, cv2.cv2.ROTATE_90_CLOCKWISE)
 
     # active the process on every video by order
-    def show_vid(self):
+    def show_vid(self, selected_casc):
         videos_name_list = []
-        path = glob.glob('Video Samples/*.mp4')  # choose right format and location
+        path = glob.glob(r'Samples\Baby_Detection_Videos\*.mp4')
 
         for name in path:  # check if gets names OR the videos (MP4)
             videos_name_list.append(name)
@@ -353,14 +346,14 @@ class FrameHelper(object):
         # print(videos_name_list)
 
         for vid in videos_name_list:
-            print('Video Path:', vid)  # video name
-            self.show_feed(vid)
+            # print('Video Path:', vid)  # video name
+            self.show_feed(vid, selected_casc)
 
         self.videos_are_done = True
         print("All Video Are Done - Thank You")
 
     # get one video -> deliver motion detection
-    def show_feed(self, vid_name):
+    def show_feed(self, vid_name, selected_casc):
         self.vid_capture = cv2.VideoCapture(vid_name)  # 0 for camera OR video_name
         if self.vid_capture is None:
             print("Failed to read the video")
@@ -374,6 +367,20 @@ class FrameHelper(object):
         # resized_capture = resizeimage.resize_thumbnail(capture, [640, 360])
         # frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         # frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        # TODO fix the upper torso acurding the low half of upper body cascade results
+        feature_params = dict(maxCorners=300, qualityLevel=0.2, minDistance=2, blockSize=7)
+        lk_params = dict(winSize=(15, 15), maxLevel=2, criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
+        color = (0, 255, 0)
+        f = self.prev_frame
+        f = cv2.rotate(f, cv2.cv2.ROTATE_90_CLOCKWISE)
+        prev_gray = cv2.cvtColor(f, cv2.COLOR_BGR2GRAY)
+        my_mask = np.zeros_like(prev_gray)
+        my_mask[150:200, 100:200] = 255  # ROI coordinates
+        prev = cv2.goodFeaturesToTrack(prev_gray, mask=my_mask, **feature_params)
+        mask = np.zeros_like(f)
+
+        # TODO fix the upper torso acurding the low half of upper body cascade results
 
         while self.vid_capture.isOpened():
             if self.flag_end is True:  # [x] OR Ctrl+e pressed in the GUI
@@ -421,13 +428,35 @@ class FrameHelper(object):
 
             cv2.imshow("original feed", self.curr_frame)
 
+            # TODO fix the upper torso acurding the low half of upper body cascade results
+            if self.state == 'breathing detection':
+                f = self.curr_frame
+                gray = cv2.cvtColor(f, cv2.COLOR_BGR2GRAY)
+                frame_num = self.vid_capture.get(cv2.CAP_PROP_POS_FRAMES)
+                if int(frame_num) % 250 == 0:  # calc goodFeaturesToTrack every 5-6 seconds TODO maybe better calc with the center
+                    prev = cv2.goodFeaturesToTrack(prev_gray, mask=my_mask, **feature_params)
+                nxt, status, error = cv2.calcOpticalFlowPyrLK(prev_gray, gray, prev, None, **lk_params)
+                good_old = prev[status == 1]
+                good_new = nxt[status == 1]
+
+                for i, (new, old) in enumerate(zip(good_new, good_old)):
+                    a, b = new.ravel()
+                    f = cv2.circle(f, (a, b), 3, color, -1)
+                f_output = cv2.add(f, mask)
+                prev_gray = gray.copy()
+                prev = good_new.reshape(-1, 1, 2)
+
+                cv2.imshow("original feed", f_output)
+            # TODO fix the upper torso acurding the low half of upper body cascade results
+
             if self.state == 'baby detection':
-                casc = self.get_ROI()  # get the ROI info using the cascades
+                casc = self.get_ROI(selected_casc)  # get the ROI info using the cascades
                 for (a, b, c, d) in casc:
                     self.draw_rect(a, b, c, d)  # draws the rect on the frame_output
                     self.center = a+c/2, b  # (x+w/2,y) update the lower center of the detected ROI
                     self.new_xywh = a, b, c, d
-                cv2.imshow("tempered feed", self.frame_output)
+                # cv2.imshow("tempered feed", self.frame_output)
+                cv2.imshow("original feed", self.frame_output)  # shows only the tempered frame
 
             self.prev_frame = self.curr_frame
 
@@ -440,16 +469,16 @@ class FrameHelper(object):
 
     # returns the ROI found with the cascade
     # returns casc with potentially many ROIs
-    def get_ROI(self):
+    def get_ROI(self, selected_casc):
         gray = cv2.cvtColor(self.curr_frame, cv2.COLOR_BGR2GRAY)
-        Cascade = cv2.CascadeClassifier(self.cascade_upper_body)
+        Cascade = cv2.CascadeClassifier(selected_casc)
         '''
         scaleFactor 1.05 is a good possible value for this, which means you use a small step for resizing, 
         i.e. reduce size by 5%, you increase the chance of a matching size with the model for detection is found. 
         This also means that the algorithm works slower since it is more thorough. 
         You may increase it to as much as 1.4 for faster detection, with the risk of missing some faces altogether.
         '''
-        casc = Cascade.detectMultiScale(gray, 1.05, 5, minSize=(130, 130))  # minSize=(W, H)
+        casc = Cascade.detectMultiScale(gray, 1.05, 5, minSize=(100, 100))  # minSize=(W, H)
         return casc
 
     def draw_rect(self, x, y, w, h, color=(0, 255, 210), width=4):
