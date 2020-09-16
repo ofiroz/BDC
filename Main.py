@@ -26,11 +26,12 @@ class GUI:
 
         self.motivation = Menu(self.menubutton)  # sub-menu
         self.menubutton.menu.add_cascade(menu=self.motivation, label="Motivation")
-        self.motivation.add_command(label="Pictures", command=self.proc.motivation_pics)
-        self.motivation.add_command(label="VIdeo", command=self.proc.motivation_vid_t)  # needs a new thread
+        self.motivation.add_command(label="Pictures, Upper Body", command=self.proc.motivation_pics)
+        self.motivation.add_command(label="VIdeo, Face", command=self.proc.motivation_vid_t)  # needs a new thread
 
         self.menubutton.menu.add_separator()
 
+        self.menubutton.menu.add_command(label="Open Samples Folder", command=lambda: self.open_folder(self.SMP_path))
         self.menubutton.menu.add_command(label="Open Cascade Folder", command=lambda: self.open_folder(self.casc_path))
         self.menubutton.menu.add_command(label="Open Logs Folder", command=lambda: self.open_folder(self.logs_path))
         self.menubutton.menu.add_command(label="Open Videos Folder", command=lambda: self.open_folder(self.vid_path))
@@ -57,10 +58,11 @@ class GUI:
         self.btn3.config(command=self.pulse_monitor)
 
         # the 'r' is a conversion to raw string (unicode error)
-        self.casc_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\custom haar cascade\Cascades"
+        self.SMP_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\Project ReWriten\Samples"
+        self.casc_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\custom haar cascade"
         self.logs_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\custom haar cascade\Logs Research"
         self.vid_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\custom haar cascade\Videos"
-        self.pics_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\Project ReWriten\Pictures_Set"
+        self.pics_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\Project ReWriten\Samples\Pictures_Set"
 
     @staticmethod
     def open_folder(path):
@@ -81,14 +83,10 @@ class GUI:
     # runs samples videos and returns person with a circled center
     def breath_detection(self):
         self.disable(self.btn2)
-        # self.proc.state = 'baby detection'
-        print('self.proc.state',self.proc.state)
-
-        # 2 threads for to 2 infinity loops
-        t1 = Thread(target=self.proc.call_frame_processor)  # process the sample frame TODO: useless
-        t2 = Thread(target=self.proc.show_vid)  # Shows the video
-        t2.start()
-        t1.start()
+        self.proc.state = 'breathing detection'
+        # print('self.proc.state',self.proc.state)
+        t = Thread(target=lambda: self.proc.show_vid('Dummy'))  # Dummy is a 'must' arg used in baby_detection option
+        t.start()
 
     # opens a new window with 2 choices:
     # 1. detect from pictures
@@ -97,32 +95,42 @@ class GUI:
         self.disable(self.btn1)
 
         newWindow = Toplevel(self.root)
-        newWindow.title("tk2")
-        Label(newWindow, text="Please choose the detection platform:").grid(row=1, column=0, columnspan=2)
+        newWindow.title("Detection Options")
+        Label(newWindow, text="Please choose the detection mode (testData/cascade): ").grid(row=1, column=0, columnspan=4)
 
         #  the only good looking method to pass an arg AND commence two action at the same time
         newWindow.protocol("WM_DELETE_WINDOW", lambda e=self.btn1: [newWindow.destroy(), self.enable(e)])
         newWindow.bind('<Control-e>', lambda e: self.end_program())  # closes the program - needed here as well
 
-        b1 = ttk.Button(newWindow, text="PictureDS")
+        #self.menubutton.menu.add_command(label="Open Samples Folder", command=lambda: self.open_folder(self.SMP_path))
+        b1 = ttk.Button(newWindow, text="PicDS/UB")
         b1.grid(row=2, column=0)
-        b1.config(command=self.baby_detection_pics)
+        b1.config(command=lambda: self.baby_detection_pics(self.proc.cascade_upper_body))
 
-        b2 = ttk.Button(newWindow, text="Video")
+        b2 = ttk.Button(newWindow, text="PicDS/F")
         b2.grid(row=2, column=1)
-        b2.config(command=self.baby_detection_vid)
+        b2.config(command=lambda: self.baby_detection_pics(self.proc.cascade_face))
 
-    # Run the cascade on pictures dataset
-    def baby_detection_pics(self):
-        print("Commencing baby detection on the Pictures DataSet")
-        t1 = Thread(target=self.proc.detect_from_pics)
+        b3 = ttk.Button(newWindow, text="Video/UB")
+        b3.grid(row=2, column=2)
+        b3.config(command=lambda: self.baby_detection_vid(self.proc.cascade_upper_body))
+
+        b4 = ttk.Button(newWindow, text="Video/F")
+        b4.grid(row=2, column=3)
+        b4.config(command=lambda: self.baby_detection_vid(self.proc.cascade_face))
+
+    # Run the selected cascade (UB/F) on pictures dataset
+    def baby_detection_pics(self, cascade):
+        print("Commencing baby detection on the Pictures DataSet - was not in use in the training process")
+        # plt.close('all')
+        t1 = Thread(target=lambda: self.proc.detect_from_pics(cascade))
         t1.start()
 
     # Run the cascade on a video
-    def baby_detection_vid(self):
-        print("Commencing baby detection on a Video")
-        self.proc.state = 'baby detection'  # TODO: reuse of the video processing method (show_feed) and its vars!
-        t2 = Thread(target=self.proc.show_vid)
+    def baby_detection_vid(self, selected_casc):
+        print("Commencing baby detection on the Videos DataSet - was not in use in the training process")
+        self.proc.state = 'baby detection'  # TODO: reuse show_feed
+        t2 = Thread(target=lambda: self.proc.show_vid(selected_casc))
         t2.start()
 
     def pulse_monitor(self):
@@ -133,9 +141,9 @@ class GUI:
     # clicking Ctrl+e OR [x] will end the program
     def end_program(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
-            print("Program was terminated. Both flags updated - closing program")
-            self.proc.flag_end = True  # will kill all running threads in Process_vid
-            self.App.flag_end = True  # will kill all running threads in get_pulse
+            print("Program terminated. Both flags updated - closing program")
+            self.proc.flag_end = True  # will kill all running threads in Process_vid TODO check all option
+            self.App.flag_end = True  # will kill all running threads in get_pulse TODO check all option
             plt.close('all')
             self.root.destroy()
 
