@@ -15,7 +15,10 @@ person_detection uses Machine Learning - getting 2 warnings - cant get rid of th
 Continue...
 
 # gif test
+https://github.com/ofiroz/BDC/tree/master/rm_data/5dPlSKdROx.gif
 
+
+rm_data/5dPlSKdROx.gif
 
 # gif test
 
