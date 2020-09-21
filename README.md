@@ -14,6 +14,7 @@ person_detection uses Machine Learning - getting 2 warnings - cant get rid of th
 
 Continue...
 
+https://recordit.co/5dPlSKdROx
 
 
 Resourses used
