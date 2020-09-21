@@ -18,7 +18,7 @@ Continue...
 
 
 
-![](https://github.com/ofiroz/BDC/tree/master/rm_data/5dPlSKdROx.gif)
+![](rm_data/5dPlSKdROx.gif)
 
 
 
