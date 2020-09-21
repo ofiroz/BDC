@@ -16,6 +16,7 @@ Continue...
 
 https://recordit.co/5dPlSKdROx
 
+http://g.recordit.co/5dPlSKdROx.gif
 
 Resourses used
 ================
