@@ -17,6 +17,13 @@ Continue...
 # gif test
 https://github.com/ofiroz/BDC/tree/master/rm_data/5dPlSKdROx.gif
 
+![](https://github.com/ofiroz/BDC/tree/master/rm_data/5dPlSKdROx.gif)
+
+![](/rm_data/5dPlSKdROx.gif)
+
+![](rm_data/5dPlSKdROx.gif)
+
+![](5dPlSKdROx.gif)
 
 rm_data/5dPlSKdROx.gif
 
