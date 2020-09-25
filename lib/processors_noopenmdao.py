@@ -24,7 +24,7 @@ class findFaceGetPulse(object):
         self.bpms = []
         self.bpm = 0
         # dpath = "haarcascade_frontalface_alt.xml"
-        self.dpath = "haar_cascade_frontal_face_24x24_15it_85pos_39m15sec.xml"
+        self.dpath = "Data/Cascades/haar_cascade_frontal_face_24x24_15it_85pos_39m15sec.xml"
         '''
         dpath = resource_path("haarcascade_frontalface_alt.xml")
         if not os.path.exists(dpath):
@@ -148,7 +148,7 @@ class findFaceGetPulse(object):
             # cv2.putText(self.frame_out, "Face", (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
             self.draw_rect(forehead1)
             x, y, w, h = forehead1
-            cv2.putText(self.frame_out, "Forehead", (x-7, y-2), cv2.FONT_HERSHEY_PLAIN, 0.6, col)
+            # cv2.putText(self.frame_out, "Forehead", (x-7, y-2), cv2.FONT_HERSHEY_PLAIN, 0.6, col)
             return
         
         if set(self.face_rect) == set([1, 1, 2, 2]):
