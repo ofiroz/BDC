@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import os
+import IOU_Intersection_over_Union.IOU_calculator as iou
 from Process_vid import FrameHelper
 from threading import Thread
 import get_pulse
@@ -31,6 +32,11 @@ class GUI:
 
         self.menubutton.menu.add_separator()
 
+        self.menubutton.menu.add_command(label="IOU", command=self.calc_IOU)
+
+        self.menubutton.menu.add_separator()
+
+        self.menubutton.menu.add_command(label="Open Samples Folder", command=lambda: self.open_folder(self.Data_path))
         self.menubutton.menu.add_command(label="Open Samples Folder", command=lambda: self.open_folder(self.SMP_path))
         self.menubutton.menu.add_command(label="Open Cascade Folder", command=lambda: self.open_folder(self.casc_path))
         self.menubutton.menu.add_command(label="Open Logs Folder", command=lambda: self.open_folder(self.logs_path))
@@ -38,7 +44,7 @@ class GUI:
         self.menubutton.menu.add_command(label="Open Pictures Folder", command=lambda: self.open_folder(self.pics_path))
         self.menubutton.grid(row=0)
 
-        self.label = ttk.Label(self.root, text="Some Welcome Label")
+        self.label = ttk.Label(self.root, text="Welcome To BDC")
         self.label.grid(row=1, column=0, columnspan=3)
         self.label.config(font=('Ariel', 18, 'bold'))  # font_name, size, extra (bold, underline..)
 
@@ -58,8 +64,9 @@ class GUI:
         self.btn3.config(command=self.pulse_monitor)
 
         # the 'r' is a conversion to raw string (unicode error)
-        self.SMP_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\Project ReWriten\Samples"
-        self.casc_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\custom haar cascade"
+        self.Data_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\Project ReWriten\Data"
+        self.SMP_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\Project ReWriten\Data\Samples"
+        self.casc_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\Project ReWriten\Data\Cascades"
         self.logs_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\custom haar cascade\Logs Research"
         self.vid_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\custom haar cascade\Videos"
         self.pics_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\Project ReWriten\Samples\Pictures_Set"
@@ -82,10 +89,10 @@ class GUI:
 
     # runs samples videos and returns person with a circled center
     def breath_detection(self):
-        self.disable(self.btn2)
+        #self.disable(self.btn2)
         self.proc.state = 'breathing detection'
         # print('self.proc.state',self.proc.state)
-        t = Thread(target=lambda: self.proc.show_vid('Dummy'))  # Dummy is a 'must' arg used in baby_detection option
+        t = Thread(target=lambda: self.proc.show_vid(self.proc.cascade_upper_body))  # Dummy is a 'must' arg used in baby_detection option
         t.start()
 
     # opens a new window with 2 choices:
@@ -98,7 +105,7 @@ class GUI:
         newWindow.title("Detection Options")
         Label(newWindow, text="Please choose the detection mode (testData/cascade): ").grid(row=1, column=0, columnspan=4)
 
-        #  the only good looking method to pass an arg AND commence two action at the same time
+        # the only good looking method to pass an arg AND commence two action at the same time
         newWindow.protocol("WM_DELETE_WINDOW", lambda e=self.btn1: [newWindow.destroy(), self.enable(e)])
         newWindow.bind('<Control-e>', lambda e: self.end_program())  # closes the program - needed here as well
 
@@ -129,7 +136,7 @@ class GUI:
     # Run the cascade on a video
     def baby_detection_vid(self, selected_casc):
         print("Commencing baby detection on the Videos DataSet - was not in use in the training process")
-        self.proc.state = 'baby detection'  # TODO: reuse show_feed
+        self.proc.state = 'baby detection'
         t2 = Thread(target=lambda: self.proc.show_vid(selected_casc))
         t2.start()
 
@@ -138,12 +145,16 @@ class GUI:
         t3 = Thread(target=self.App.MY_main_loop)
         t3.start()
 
+
+    def calc_IOU(self):
+        iou.calc()
+
     # clicking Ctrl+e OR [x] will end the program
     def end_program(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             print("Program terminated. Both flags updated - closing program")
-            self.proc.flag_end = True  # will kill all running threads in Process_vid TODO check all option
-            self.App.flag_end = True  # will kill all running threads in get_pulse TODO check all option
+            self.proc.flag_end = True  # will kill all running threads in Process_vid TODO check all options
+            self.App.flag_end = True  # will kill all running threads in get_pulse TODO check all options
             plt.close('all')
             self.root.destroy()
 
