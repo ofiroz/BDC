@@ -24,8 +24,8 @@ Continue...
 
 # gif test
 
-Resourses used
-================
+## Resourses used
+
 
 https://pdfs.semanticscholar.org/b611/2977b9a18fd80f1a8eb855f3ab04be8572c1.pdf - SIFT & haar features 
 
