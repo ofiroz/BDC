@@ -24,12 +24,23 @@ Continue...
 
 # gif test
 
-## Resourses used
+# Resourses used
+
+## Viola-Jones and Cascade Classifier Training
+https://sites.google.com/site/5kk73gpu2012/assignment/viola-jones-face-detection#TOC-Cascade-Classifier
+https://www.mathworks.com/help/vision/ug/train-a-cascade-object-detector.html
+http://amin-ahmadi.com/cascade-trainer-gui/
+https://docs.opencv.org/2.4/modules/objdetect/doc/cascade_classification.html
+https://github.com/opencv/opencv/tree/master/data/haarcascades - all openCV classifiers
+
+## Object detection
+
+
 
 
 https://pdfs.semanticscholar.org/b611/2977b9a18fd80f1a8eb855f3ab04be8572c1.pdf - SIFT & haar features 
 
-https://www.mathworks.com/help/vision/ug/train-a-cascade-object-detector.html - cascade training 
+
 
 https://github.com/thearn/webcam-pulse-detector - pulse detection
 
@@ -37,7 +48,7 @@ https://academic.oup.com/cardiovascres/article/70/1/12/408540 - Mayer waves and 
 
 https://arxiv.org/pdf/1909.03503.pdf - monitoring breathing rate from face alone -> future todo
 
-https://docs.opencv.org/2.4/modules/objdetect/doc/cascade_classification.html - Haar Feature based Cascade Classifier
+
 
 https://sites.google.com/site/5kk73gpu2012/assignment/viola-jones-face-detection#TOC-Image-Pyramid - Haar Feature and Image Pyramid
 
