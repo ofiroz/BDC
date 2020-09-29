@@ -11,16 +11,13 @@ All three are using a costume made cascade classifier in order to detect babys i
 
 ![](rm_data/diagram.jpg)
 <br/>
-<br/>
-<br/>
+
 ## Baby Face Realtime Detection:
 ![](rm_data/zFD5bUCkCG.gif)
 <br/>
-<br/>
-<br/>
+
 ## Intersection over Union (IOU) Results:
-![](rm_data/rm1.JPG) | ![](rm_data/rm2.JPG)
-<br/>
+![](rm_data/rm1.JPG)    | ![](rm_data/rm2.JPG)
 <br/>
 <br/>
   
