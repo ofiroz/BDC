@@ -36,12 +36,12 @@ class GUI:
 
         self.menubutton.menu.add_separator()
 
-        self.menubutton.menu.add_command(label="Open Samples Folder", command=lambda: self.open_folder(self.Data_path))
-        self.menubutton.menu.add_command(label="Open Samples Folder", command=lambda: self.open_folder(self.SMP_path))
-        self.menubutton.menu.add_command(label="Open Cascade Folder", command=lambda: self.open_folder(self.casc_path))
-        self.menubutton.menu.add_command(label="Open Logs Folder", command=lambda: self.open_folder(self.logs_path))
-        self.menubutton.menu.add_command(label="Open Videos Folder", command=lambda: self.open_folder(self.vid_path))
-        self.menubutton.menu.add_command(label="Open Pictures Folder", command=lambda: self.open_folder(self.pics_path))
+        self.menubutton.menu.add_command(label="Open Samples Folder", command=lambda: self.proc.open_folder(self.Data_path))
+        self.menubutton.menu.add_command(label="Open Samples Folder", command=lambda: self.proc.open_folder(self.SMP_path))
+        self.menubutton.menu.add_command(label="Open Cascade Folder", command=lambda: self.proc.open_folder(self.casc_path))
+        self.menubutton.menu.add_command(label="Open Logs Folder", command=lambda: self.proc.open_folder(self.logs_path))
+        self.menubutton.menu.add_command(label="Open Videos Folder", command=lambda: self.proc.open_folder(self.vid_path))
+        self.menubutton.menu.add_command(label="Open Pictures Folder", command=lambda: self.proc.open_folder(self.pics_path))
         self.menubutton.grid(row=0)
 
         self.label = ttk.Label(self.root, text="Welcome To BDC")
@@ -70,12 +70,12 @@ class GUI:
         self.logs_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\custom haar cascade\Logs Research"
         self.vid_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\custom haar cascade\Videos"
         self.pics_path = r"C:\Users\ofirozer\PycharmProjects\untitled\1PROJECT\Project ReWriten\Samples\Pictures_Set"
-
+    '''
     @staticmethod
     def open_folder(path):
         p = os.path.realpath(path)
         os.startfile(p)
-
+    '''
     # This function disables the input button - there is no need to press it a second time
     @staticmethod
     def disable(btn):
@@ -110,19 +110,19 @@ class GUI:
         newWindow.bind('<Control-e>', lambda e: self.end_program())  # closes the program - needed here as well
 
         #self.menubutton.menu.add_command(label="Open Samples Folder", command=lambda: self.open_folder(self.SMP_path))
-        b1 = ttk.Button(newWindow, text="PicDS/UB")
+        b1 = ttk.Button(newWindow, text="PicDS-UB")
         b1.grid(row=2, column=0)
         b1.config(command=lambda: self.baby_detection_pics(self.proc.cascade_upper_body))
 
-        b2 = ttk.Button(newWindow, text="PicDS/F")
+        b2 = ttk.Button(newWindow, text="PicDS-F")
         b2.grid(row=2, column=1)
         b2.config(command=lambda: self.baby_detection_pics(self.proc.cascade_face))
 
-        b3 = ttk.Button(newWindow, text="Video/UB")
+        b3 = ttk.Button(newWindow, text="Video-UB")
         b3.grid(row=2, column=2)
         b3.config(command=lambda: self.baby_detection_vid(self.proc.cascade_upper_body))
 
-        b4 = ttk.Button(newWindow, text="Video/F")
+        b4 = ttk.Button(newWindow, text="Video-F")
         b4.grid(row=2, column=3)
         b4.config(command=lambda: self.baby_detection_vid(self.proc.cascade_face))
 
