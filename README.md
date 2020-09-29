@@ -10,11 +10,11 @@ All three works at real time.
 All three are using a costume made cascade classifier in order to detect babys in  bed.
 
 ![](rm_data/diagram.jpg)
-
-
-
-
-
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
 
 
 ![](rm_data/5dPlSKdROx.gif)
