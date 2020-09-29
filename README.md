@@ -26,9 +26,11 @@ Continue...
 
 # Resourses used
 
-## Viola-Jones and Cascade Classifier Training
+## Viola-Jones: Haar features, Cascade Classifier Training
 https://sites.google.com/site/5kk73gpu2012/assignment/viola-jones-face-detection#TOC-Cascade-Classifier
 https://www.mathworks.com/help/vision/ug/train-a-cascade-object-detector.html
+https://www.hindawi.com/journals/mse/2015/948960/ - Haar and LBP
+https://sites.google.com/site/5kk73gpu2012/assignment/viola-jones-face-detection#TOC-Image-Pyramid
 http://amin-ahmadi.com/cascade-trainer-gui/
 https://docs.opencv.org/2.4/modules/objdetect/doc/cascade_classification.html
 https://github.com/opencv/opencv/tree/master/data/haarcascades - all openCV classifiers
@@ -37,8 +39,8 @@ https://github.com/opencv/opencv/tree/master/data/haarcascades - all openCV clas
 
 
 
+## Respiratory Monitoring: Optical flow (Lucas-Kanade, Gunnar-Farneback), Corner detection (Shi-Tomasi, Harris-Stephens)
 
-https://pdfs.semanticscholar.org/b611/2977b9a18fd80f1a8eb855f3ab04be8572c1.pdf - SIFT & haar features 
 
 
 
@@ -49,10 +51,6 @@ https://academic.oup.com/cardiovascres/article/70/1/12/408540 - Mayer waves and 
 https://arxiv.org/pdf/1909.03503.pdf - monitoring breathing rate from face alone -> future todo
 
 
-
-https://sites.google.com/site/5kk73gpu2012/assignment/viola-jones-face-detection#TOC-Image-Pyramid - Haar Feature and Image Pyramid
-
-https://www.hindawi.com/journals/mse/2015/948960/ - Haar and LBP study
 
 http://people.csail.mit.edu/mrub/evm/#code - Eulerian Magnification
 
