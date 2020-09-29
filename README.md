@@ -1,6 +1,6 @@
 # BDC - Breathing_Detection_Camera
 
-In this project I will research and explore the field of infants motion monitoring using a simple camera. 
+In this project I will research and explore the field of infants motion monitoring using a simple camera.  
 The Three key features are:
  - baby (only) detection
  - baby respiratory monitoring
