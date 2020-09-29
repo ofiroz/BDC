@@ -1,20 +1,19 @@
-# BDC
-Breathing_Detection_Camera
+# BDC - Breathing_Detection_Camera
 
-Three key features:
-1. baby (only) detection
-2. baby respiratory monitoring
-3. baby pulse monitoring
+In this project I will research and explore the field of infants motion monitoring using a simple camera. 
+The Three key features are:
+ - baby (only) detection
+ - baby respiratory monitoring
+ - baby pulse monitoring
 
-All three works in real time!
+All three works at real time. 
+All three are using a costume made cascade classifier in order to detect babys in  bed.
+
+![](rm_data/diagram.jpg)
 
 
 
-person_detection uses Machine Learning - getting 2 warnings - cant get rid of them - solution: downgrade to pytorch 1.14.0 (not working)
 
-Continue...
-
-# gif test
 
 
 
@@ -22,9 +21,8 @@ Continue...
 
 
 
-# gif test
-
-# Resourses used
+  
+# Resources used
 
 ## Viola-Jones: Haar features, Cascade Classifier Training
 https://sites.google.com/site/5kk73gpu2012/assignment/viola-jones-face-detection#TOC-Cascade-Classifier
@@ -35,36 +33,24 @@ http://amin-ahmadi.com/cascade-trainer-gui/
 https://docs.opencv.org/2.4/modules/objdetect/doc/cascade_classification.html
 https://github.com/opencv/opencv/tree/master/data/haarcascades - all openCV classifiers
 
-## Object detection
-
-
-
 ## Respiratory Monitoring: Optical flow (Lucas-Kanade, Gunnar-Farneback), Corner detection (Shi-Tomasi, Harris-Stephens)
-
-
-
-
-https://github.com/thearn/webcam-pulse-detector - pulse detection
-
-https://academic.oup.com/cardiovascres/article/70/1/12/408540 - Mayer waves and nerves frequencies 
-
+https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_video/py_lucas_kanade/py_lucas_kanade.html
+https://www.youtube.com/watch?v=a-v5_8VGV0A&t=4128s&ab_channel=JosephRedmon
+https://docs.opencv.org/2.4/modules/video/doc/motion_analysis_and_object_tracking.html
+https://www.diva-portal.org/smash/get/diva2:273847/FULLTEXT01.pdf
+https://nanonets.com/blog/optical-flow/
+https://aishack.in/tutorials/harris-corner-detector/
+https://aishack.in/tutorials/shitomasi-corner-detector/
+https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_shi_tomasi/py_shi_tomasi.html
 https://arxiv.org/pdf/1909.03503.pdf - monitoring breathing rate from face alone -> future todo
 
+## Pulse Monitoring:
+https://github.com/thearn/webcam-pulse-detector
+https://ep.liu.se/ecp/129/002/ecp16129002.pdf
+https://academic.oup.com/cardiovascres/article/70/1/12/408540 - Mayer waves and nerves frequencies 
+https://en.wikipedia.org/wiki/Mayer_waves
 
-
-http://people.csail.mit.edu/mrub/evm/#code - Eulerian Magnification
-
-https://www.microsoft.com/en-us/research/wp-content/uploads/2013/01/bill-freeman_visualmotion.pdf - Eulerian Magnification Microsoft study
-
-https://github.com/brycedrennan/eulerian-magnification - implementation
-
-https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_pyramids/py_pyramids.html - Image Pyramids
-
-https://docs.opencv.org/2.4/modules/video/doc/motion_analysis_and_object_tracking.html - calculating an optical flow (Lucas-Kanade) for breath monitoring
-
-https://nanonets.com/blog/optical-flow/ - optical-flow
-
-https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/ - preview to the Gunnar Farneback algorithm (optical flow)
-
-https://www.diva-portal.org/smash/get/diva2:273847/FULLTEXT01.pdf - Gunnar Farneback algorithm (optical flow)
-
+## Eulerian Magnification
+http://people.csail.mit.edu/mrub/evm/#code - MIT
+https://www.microsoft.com/en-us/research/wp-content/uploads/2013/01/bill-freeman_visualmotion.pdf - Microsoft
+https://github.com/brycedrennan/eulerian-magnification
