@@ -4,6 +4,7 @@ import glob
 import threading  # TODO: delete after deleting two_seconds
 from threading import Thread
 import re  # sort videos_name_list
+import os
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
@@ -55,6 +56,11 @@ class FrameHelper(object):
         self.breathing_counter = 0
         self.breathing_gone_pic = cv2.imread("Data/Error_pics/breathing_gone.jpg")
 
+        self.detect_Face_path = r"Data\Samples\Baby_Detection_Pictures\ResultsFace\Detected"
+        self.not_detect_Face_path = r"Data\Samples\Baby_Detection_Pictures\ResultsFace\DetectionFailed"
+        self.detect_UB_path = r"Data\Samples\Baby_Detection_Pictures\ResultsUpperBody\Detected"
+        self.not_detect_UB_path = r"Data\Samples\Baby_Detection_Pictures\ResultsUpperBody\DetectionFailed"
+
     # if the "motivation_flag" is True --> compare my cascade to the official opencv one
     def detect_from_pics(self, selected_casc):
         Cascade = cv2.CascadeClassifier(selected_casc)
@@ -64,18 +70,21 @@ class FrameHelper(object):
         officialHAAR_motivation = []  # for motivation
 
         pic_set = []  # TODO: make a method to do this..
-        path = glob.glob('Data/Samples/Pictures_Set/*.jpg')  # choose right format and location
+
+        path = glob.glob('Data/Samples/Baby_Detection_Pictures/DataSet/*.jpg')
+        if self.motivation_flag is True:
+            path = glob.glob('Data/Samples/Pictures_Set/*.jpg')
 
         for name in path:
             pic_set.append(name)
 
-        # TODO: output - two cv2 table: one with detected and one without
         for p in pic_set:
             flag = False  # is True if rect is found
             img = cv2.imread(p)
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            casc = Cascade.detectMultiScale(gray, 1.05, 5, minSize=(130, 130))  # minSize=(W, H)
-
+            casc = Cascade.detectMultiScale(gray, 1.05, 5, minSize=(100, 100))  # minSize=(W, H)
+            if selected_casc == self.cascade_upper_body:
+                casc = Cascade.detectMultiScale(gray, 1.05, 5, minSize=(150, 150))
             for (a, b, c, d) in casc:
                 cv2.rectangle(img, (a, b), (a + c, b + d), (0, 255, 210), 4)
                 flag = True
@@ -102,26 +111,48 @@ class FrameHelper(object):
                 plt.imshow(np.abs(n), cmap='gray')
                 plt.xticks([]), plt.yticks([])
                 plot_mot += 1
+
+            plot_d = 331
+            plot_nd = 331
+            plt.figure('Positive Detection')
+            for n in detected:
+                n = cv2.cvtColor(n, cv2.COLOR_BGR2RGB)  # convert from cv2(BGR) to plt(RGB)
+                plt.subplot(plot_d)
+                plt.imshow(np.abs(n), cmap='gray')
+                plt.xticks([]), plt.yticks([])
+                plot_d += 1
+
+            plt.figure('Negative Detection')
+            for n in not_detected:
+                n = cv2.cvtColor(n, cv2.COLOR_BGR2RGB)  # convert from cv2(BGR) to plt(RGB)
+                plt.subplot(plot_nd)
+                plt.imshow(np.abs(n), cmap='gray')
+                plt.xticks([]), plt.yticks([])
+                plot_nd += 1
                 # ======= motivation ====================================
 
-        # plot_d = 221
-        plot_d = 331
-        plot_nd = 331
-        plt.figure('Positive Detection')
-        for n in detected:
-            n = cv2.cvtColor(n, cv2.COLOR_BGR2RGB)  # convert from cv2(BGR) to plt(RGB)
-            plt.subplot(plot_d)
-            plt.imshow(np.abs(n), cmap='gray')
-            plt.xticks([]), plt.yticks([])
-            plot_d += 1
+        if self.motivation_flag is False:
+            index = 1
+            for i in detected:
+                filename = './Data/Samples/Baby_Detection_Pictures/ResultsFace/Detected/res' + str(int(index)) + ".jpg"
+                if selected_casc == self.cascade_upper_body:
+                    filename = './Data/Samples/Baby_Detection_Pictures/ResultsUpperBody/Detected/res' + str(int(index)) + ".jpg"
+                cv2.imwrite(filename, i)
+                index = index+1
+            index = 1
+            for i in not_detected:
+                filename = './Data/Samples/Baby_Detection_Pictures/ResultsFace/DetectionFailed/res' + str(int(index)) + ".jpg"
+                if selected_casc == self.cascade_upper_body:
+                    filename = './Data/Samples/Baby_Detection_Pictures/ResultsUpperBody/DetectionFailed/res' + str(int(index)) + ".jpg"
+                cv2.imwrite(filename, i)
+                index = index+1
 
-        plt.figure('Negative Detection')
-        for n in not_detected:
-            n = cv2.cvtColor(n, cv2.COLOR_BGR2RGB)  # convert from cv2(BGR) to plt(RGB)
-            plt.subplot(plot_nd)
-            plt.imshow(np.abs(n), cmap='gray')
-            plt.xticks([]), plt.yticks([])
-            plot_nd += 1
+            if selected_casc == self.cascade_upper_body:
+                self.open_folder(self.detect_UB_path)
+                self.open_folder(self.not_detect_UB_path)
+            elif selected_casc == self.cascade_face:
+                self.open_folder(self.detect_Face_path)
+                self.open_folder(self.not_detect_Face_path)
 
         self.motivation_flag = False
         try:
@@ -402,3 +433,8 @@ class FrameHelper(object):
     def breathing_alert(self):
         print("breathing was not found")
         cv2.imshow("error", self.breathing_gone_pic)
+
+    @staticmethod
+    def open_folder(path):
+        p = os.path.realpath(path)
+        os.startfile(p)
