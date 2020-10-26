@@ -41,14 +41,15 @@ def file_to_list(path):
 
 
 def calc():
-    test_name_list = append_to_list('./Testing_samples/*.jpg')
-    gt_list = file_to_list('./Files/byHand_info.txt')
-    pred_list = file_to_list('./Files/auto_info.txt')
+    test_name_list = append_to_list('./IOU_Intersection_over_Union/Testing_samples/*.jpg')
+    gt_list = file_to_list('./IOU_Intersection_over_Union/Files/byHand_info.txt')
+    pred_list = file_to_list('./IOU_Intersection_over_Union/Files/auto_info.txt')
 
     iou_list = []  # calc average with it
 
     unionArea = None
 
+    frame_num = 1
     # rectangle both roi's and calc the iou
     for (name, gt, pred) in zip(test_name_list, gt_list, pred_list):
         # print(idx, name, gt_xywh, pred_xywh)
@@ -78,19 +79,25 @@ def calc():
         cv2.rectangle(pic, (int(gt_x), int(gt_y)), (int(gt_x+gt_w), int(gt_y+gt_h)), (0, 255, 0), 3)
         cv2.rectangle(pic, (int(pred_x), int(pred_y)), (int(pred_x+pred_w), int(pred_y+pred_h)), (0, 0, 255), 3)
 
+        cv2.putText(pic, str(frame_num), (320, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 3)
+
         cv2.putText(pic, "IOU: {}".format(iou), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 3)
         cv2.putText(pic, "IOU: {}".format(iou), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 1)  # hollow text
 
         cv2.putText(pic, "Average IOU is: 0.83", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 3)
         cv2.putText(pic, "Average IOU is: 0.83", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)  # hollow text
 
+        frame_num += 1
+        print(frame_num)
+
         cv2.imshow('frame', pic)
         cv2.waitKey(0)
 
     print("Average IOU is: " + str("%.2f" % (sum(iou_list) / len(iou_list))))
+    cv2.destroyAllWindows()
 
 
-if __name__ == "__main__":
-    calc()
+# if __name__ == "__main__":
+#    calc()
 
 
